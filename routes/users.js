@@ -41,6 +41,9 @@ router.put("/:id", (req, res) => {
   }
 
   const id = Number(req.params.id);
+  if (isNaN(id)) {
+    return res.status(400).json({ error: "id must be a number" });
+  }
   const user = store.updateUser(id, { name, email });
 
   if (!user) {
