@@ -1,14 +1,37 @@
 # Project Notes — PUT /users/:id
 
-## Plan
-Implement the `PUT /users/:id` endpoint to update an existing user. The work was split into two layers: the store and the route.
+## 1. Утверждённый план
 
-## Model
-Claude Sonnet 4.6 (claude-sonnet-4-6) via Claude Code.
+> **Что включал план:** разбиение задачи на два независимых слоя — метод `updateUser` в `db/store.js` и роут `PUT /:id` в `routes/users.js` с явно заданным порядком проверок: сначала валидация полей (400), затем вызов store и проверка на существование пользователя (404).
+>
+> **Вносились ли изменения:** нет. План изначально учитывал все требования тестов (`update-user.test.js`) — три сценария (200, 400, 404) были закрыты в первой итерации без правок.
 
-## Commit split
-1. `feat(store): add updateUser method` — added `updateUser(id, { name, email })` to `db/store.js`. Finds the user by id, mutates name and email in place, returns the updated object or null if not found.
-2. `feat(routes): add PUT /users/:id endpoint` — added the route to `routes/users.js`. Validates that both fields are present (400), calls `store.updateUser`, returns 404 if the store returns null, otherwise 200 with the updated user.
+---
 
-## Review
-Validation order matters: the 400 check runs before the store call, matching the test expectations. The store mutates the object in place since the in-memory array holds object references — no need to splice and re-insert.
+## 2. Выбор модели
+
+> **Модель:** Claude Sonnet 4.6 (`claude-sonnet-4-6`) через Claude Code.
+>
+> **Почему:** модель хорошо подходит для точечного рефакторинга небольших Node.js-проектов — уверенно навигирует по локальным файлам, генерирует минимальные и семантически правильные изменения, формирует логически разделённые коммиты без лишних артефактов.
+
+---
+
+## 3. Разбивка на коммиты
+
+> **Коммит 1 — `feat(store): add updateUser method`**
+> Только `db/store.js`. Изолирует слой данных: поиск по id, мутация объекта на месте, возврат `null` при отсутствии пользователя.
+>
+> **Коммит 2 — `feat(routes): add PUT /users/:id endpoint`**
+> Только `routes/users.js` + `NOTES.md`. Изолирует слой бизнес-логики: парсинг параметров, цепочка проверок, делегирование в store.
+>
+> **Почему именно так:** разделение store / route упрощает код-ревью — изменения в каждом слое читаются и откатываются независимо друг от друга.
+
+---
+
+## 4. Результаты верификации
+
+> **Что подтвердилось:**
+> - Корректное приведение типов: `Number(req.params.id)` — id в URL всегда строка, store ищет по числу.
+> - Строгий порядок проверок: 400 до вызова store, 404 после — совпадает с порядком в тестах.
+> - Мутация объекта на месте работает корректно, так как массив `users` хранит ссылки на объекты.
+> - Все **9 из 9 тестов** прошли зелёными, включая ранее существующие тесты на GET и POST.
