@@ -3,6 +3,11 @@ const store = require("../db/store");
 
 const router = express.Router();
 
+// A field is blank if it's missing, not a string, or only whitespace.
+function isBlank(value) {
+  return typeof value !== "string" || value.trim() === "";
+}
+
 // GET /users — list every user
 router.get("/", (req, res) => {
   res.json(store.getAllUsers());
@@ -24,7 +29,7 @@ router.get("/:id", (req, res) => {
 router.post("/", (req, res) => {
   const { name, email } = req.body;
 
-  if (!name || !email) {
+  if (isBlank(name) || isBlank(email)) {
     return res.status(400).json({ error: "name and email are required" });
   }
 
@@ -37,7 +42,7 @@ router.put("/:id", (req, res) => {
   const id = Number(req.params.id);
   const { name, email } = req.body;
 
-  if (!name || !email) {
+  if (isBlank(name) || isBlank(email)) {
     return res.status(400).json({ error: "name and email are required" });
   }
 
