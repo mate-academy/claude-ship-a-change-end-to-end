@@ -24,4 +24,11 @@ function createUser({ name, email }) {
   return user;
 }
 
-module.exports = { getAllUsers, getUserById, createUser };
+function updateUser(id, { name, email }) {
+  const index = users.findIndex((u) => u.id === id);
+  if (index === -1) return undefined;
+  users[index] = { ...users[index], name, email };
+  return users[index];
+}
+
+module.exports = { getAllUsers, getUserById, createUser, updateUser };
