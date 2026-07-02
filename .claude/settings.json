@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(./**)"
+    ],
+    "deny": [
+      "Read(./.env)",
+      "Bash(git push --force:*)",
+      "Bash(*rm *..*)",
+      "Bash(rmdir *..*)",
+      "Bash(curl | sh)",
+      "Bash(*rm /*)",
+      "Bash(*rm ~/*)",
+      "Read(~/*)"
+    ]
+  }
+}
