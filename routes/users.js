@@ -40,6 +40,10 @@ router.put("/:id", (req, res) => {
     return res.status(400).json({ error: "name and email are required" });
   }
 
+  if (typeof name !== "string" || typeof email !== "string") {
+    return res.status(400).json({ error: "name and email must be strings" });
+  }
+
   const id = Number(req.params.id);
   const user = store.updateUser(id, { name, email });
 
