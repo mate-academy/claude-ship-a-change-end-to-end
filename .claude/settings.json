@@ -3,11 +3,14 @@
     "allow": [
       "Read(./**)"
     ],
+
     "deny": [
       "Read(./.env)",
       "Bash(git push --force:*)",
       "Bash(*rm *..*)",
       "Bash(rmdir *..*)",
+      "Bash(curl*)",
+      "Bash(wget*)",
       "Bash(curl | sh)",
       "Bash(*rm /*)",
       "Bash(*rm ~/*)",
