@@ -24,4 +24,17 @@ function createUser({ name, email }) {
   return user;
 }
 
-module.exports = { getAllUsers, getUserById, createUser };
+function updateUser(id, { name, email }) {
+  const user = users.find((existingUser) => existingUser.id === id);
+
+  if (!user) {
+    return null;
+  }
+
+  user.name = name;
+  user.email = email;
+
+  return user;
+}
+
+module.exports = { getAllUsers, getUserById, createUser, updateUser };
