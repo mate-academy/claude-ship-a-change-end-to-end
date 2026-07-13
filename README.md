@@ -83,8 +83,8 @@ In a short `NOTES.md`, answer in a few sentences each:
 
 Grading is automatic — `npm test` must be green on your branch. That single check covers:
 
-- [ ] the update-user endpoint updates an existing user, validates input (400 on a missing field), and returns 404 for a missing user
-- [ ] a `NOTES.md` is committed and has real content (your plan, model choice, commit split, and what review caught)
+- [x] the update-user endpoint updates an existing user, validates input (400 on a missing field), and returns 404 for a missing user
+- [x] a `NOTES.md` is committed and has real content (your plan, model choice, commit split, and what review caught)
 
 Then submit your branch as a pull request through the platform.
 
@@ -99,10 +99,10 @@ Then submit your branch as a pull request through the platform.
 
 Before you submit, make sure that:
 
-- [ ] only the intended files are in the PR — no secrets, no stray changes
-- [ ] `npm test` passes on your branch
-- [ ] the PR description explains what, why, and what to test
-- [ ] `NOTES.md` explains your choices
+- [x] only the intended files are in the PR — no secrets, no stray changes
+- [x] `npm test` passes on your branch
+- [x] the PR description explains what, why, and what to test
+- [x] `NOTES.md` explains your choices
 
 ---
 
