@@ -1,0 +1,8 @@
+- In the plan:
+  - Claude was able to note that the key files to touch are `db/store.js` and `routes/users.js`
+  - Claude was able to handle both the not found and the invalid inputs
+  - I didn't have to edit anything
+- Chose Sonnet for the plan and Haiku for the changes
+- I let Claude write the commit messages, and I didn't have to edit them
+- In the review:
+  - Claude found a missing type validation for the user id, which I chose not to fix, because tests are not covering it, but I good idea to add it
