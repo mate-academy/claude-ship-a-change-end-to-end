@@ -23,8 +23,4 @@ HTTP layer), and either could be reverted independently if something were wrong 
 
 ## What review caught
 
-I reviewed the diff before writing this file. Nothing needed changing — the new route reuses the
-exact 400/404 error shapes (`{ error: "..." }`) already used by `POST /` and `GET /:id`, so the API
-stays consistent, and it goes through `store.updateUser` rather than touching the `users` array
-directly, following the existing data-access pattern. `npm run lint` is clean, and `npm test` is
-green (all three `update-user` cases plus the existing `users`, `notes`, and `health` tests).
+I reviewed the diff before writing this file. It found a potential problem with whitespace inputs for name and email that i corrected.
