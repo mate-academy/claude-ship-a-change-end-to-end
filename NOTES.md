@@ -13,10 +13,7 @@ anything else in it.
 
 ## Model choice
 
-I used Opus 5 for both planning and implementation. This is a small, well-specified change with an
-existing test file as the spec, so a faster/cheaper model would likely have been fine too, but I
-wanted a careful read of the existing route/store conventions before adding anything, and Opus
-tends to follow established patterns more consistently on a first pass.
+I used Opus 5 for planning and sonnet for implementation.
 
 ## Commit split
 
