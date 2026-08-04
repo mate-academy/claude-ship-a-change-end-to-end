@@ -34,3 +34,20 @@ a new edge case introduced here. Also confirmed the 400-vs-404 check order
 (validate first, then look up) satisfies both grading tests regardless of
 which came first, and kept it consistent with `POST /users`'s existing
 validate-first style. No bugs found; no changes needed.
+
+
+## What was in the plan you approved, and did you edit anything before approving?
+
+Plan: Add "update a user" endpoint (PUT /users/:id)
+    
+## Which model did you choose, and why?
+
+Sonnet 5
+
+## How did you split your commits, and why that way?
+
+Split acrros comands
+
+## What did your review catch — or confirm was already fine?
+
+Miss a  `PUT /users/:id` endpoint
