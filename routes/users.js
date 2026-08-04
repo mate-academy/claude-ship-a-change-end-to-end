@@ -41,7 +41,7 @@ router.put("/:id", (req, res) => {
       .json({ error: "name and email are required and must be non-empty strings" });
   }
 
-  const user = store.updateUser(id, { name, email });
+  const user = store.updateUser(id, { name: name.trim(), email: email.trim() });
   res.json(user);
 });
 
