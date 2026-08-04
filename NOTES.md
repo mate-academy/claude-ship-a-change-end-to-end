@@ -49,3 +49,7 @@ same as `GET /:id`), the `{ error: "..." }` response shape reused verbatim
 from the existing 400/404 responses, and updating in place through the store
 rather than mutating the `users` array directly from the route. `npm test`
 and `npm run lint` were run after implementing and both are clean.
+
+One process note: the first pull request for this change was merged before
+the CI workflow had a chance to run in a `pull_request` context, so no check
+ever attached to it. This PR exists to get a real, PR-attached CI run.
