@@ -3,6 +3,10 @@ const store = require("../db/store");
 
 const router = express.Router();
 
+function isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
 // GET /users — list every user
 router.get("/", (req, res) => {
   res.json(store.getAllUsers());
@@ -30,6 +34,29 @@ router.post("/", (req, res) => {
 
   const user = store.createUser({ name, email });
   res.status(201).json(user);
+});
+
+// PUT /users/:id — replace an existing user's name and email
+router.put("/:id", (req, res) => {
+  const id = Number(req.params.id);
+  const { name, email } = req.body;
+
+  if (
+    typeof name !== "string" ||
+    name.trim() === "" ||
+    typeof email !== "string" ||
+    !isValidEmail(email)
+  ) {
+    return res.status(400).json({ error: "name and email are required" });
+  }
+
+  const user = store.updateUser(id, { name: name.trim(), email });
+
+  if (!user) {
+    return res.status(404).json({ error: "User not found" });
+  }
+
+  res.json(user);
 });
 
 module.exports = router;
