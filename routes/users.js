@@ -32,4 +32,28 @@ router.post("/", (req, res) => {
   res.status(201).json(user);
 });
 
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// PUT /users/:id — update an existing user; name and email are required
+router.put("/:id", (req, res) => {
+  const { name, email } = req.body;
+
+  const hasValidName = typeof name === "string" && name.trim().length > 0;
+  const hasValidEmail =
+    typeof email === "string" && email.trim().length > 0 && EMAIL_PATTERN.test(email);
+
+  if (!hasValidName || !hasValidEmail) {
+    return res.status(400).json({ error: "name and email must be non-empty, and email must be a valid email address" });
+  }
+
+  const id = Number(req.params.id);
+  const user = store.updateUser(id, { name, email });
+
+  if (!user) {
+    return res.status(404).json({ error: "User not found" });
+  }
+
+  res.json(user);
+});
+
 module.exports = router;
