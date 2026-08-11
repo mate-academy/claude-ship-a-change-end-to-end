@@ -3,6 +3,12 @@ const store = require("../db/store");
 
 const router = express.Router();
 
+// Field values arrive straight from JSON, so they can be any type. Only a
+// string with actual characters in it counts as present.
+function isNonEmptyString(value) {
+  return typeof value === "string" && value.trim() !== "";
+}
+
 // GET /users — list every user
 router.get("/", (req, res) => {
   res.json(store.getAllUsers());
@@ -37,7 +43,7 @@ router.put("/:id", (req, res) => {
   const id = Number(req.params.id);
   const { name, email } = req.body;
 
-  if (!name || !email) {
+  if (!isNonEmptyString(name) || !isNonEmptyString(email)) {
     return res.status(400).json({ error: "name and email are required" });
   }
 
