@@ -83,3 +83,5 @@ Verification
   - PUT /users/1 with {"name":"x"} only → 400 {"error":"name and email are required"}.
 
 Now implementing the plan.
+## Model
+sonnit
