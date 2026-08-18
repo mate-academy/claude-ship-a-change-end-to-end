@@ -84,4 +84,13 @@ Verification
 
 Now implementing the plan.
 ## Model
-sonnit
+opusplan
+## Questions
+### What was in the plan you approved, and did you edit anything before approving?
+The Claude Plan addressed the issues based on the test. I did not have to edit anything other then to ask it to reload NOTES.md
+### Which model did you choose, and why?
+The model I chose was opusplan which was recommend since Claude model can handle which model to leverage while doing the work which will save on cost
+### How did you split your commits, and why that way?
+At first I did not split the comments so I as Claude to cancel and re-commit the changes so each change was separated. The final commits to NOTES.md where done by me since I wrote them after Claude completed the changes.
+### What did your review catch — or confirm was already fine?
+It found that the update route was missing but the test js was expecting it to be complete. This promted the work to be focused on update use. Everything else it did not find any issue with since the testing was completed.
