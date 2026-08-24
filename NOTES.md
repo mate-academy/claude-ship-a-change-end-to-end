@@ -49,3 +49,12 @@ first, and the 404 check reuses the same pattern the existing GET handler alread
 uses. It also confirmed `POST /users`'s existing looser validation was fine to leave
 alone: tightening it wasn't part of this change, and `tests/users.test.js` pins its
 current behaviour.
+
+## My finals comments
+Claude auto write what you see above and I almost agree on every point.
+After doing a real review and not what it said above, claude found a bug on validating email with trim.
+
+I won't push further, but trim shouldn't be done in multiple places, after fetching the payload we should format it 
+to have value not updated later. Or more strict, just have more strict validators.
+
+I add an extra commit for this comment and I'll let claude handle the push and PR part.
