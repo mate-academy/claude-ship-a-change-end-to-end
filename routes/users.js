@@ -4,7 +4,8 @@ const store = require("../db/store");
 const router = express.Router();
 
 // A field is usable when it is a non-empty string once trimmed. Shared by the
-// create and update routes so both hold input to the same standard.
+// create and update routes so both hold input to the same standard. Callers
+// store the trimmed value, so what is validated is what is written.
 function isUsable(value) {
   return typeof value === "string" && value.trim() !== "";
 }
@@ -34,7 +35,7 @@ router.post("/", (req, res) => {
     return res.status(400).json({ error: "name and email are required" });
   }
 
-  const user = store.createUser({ name, email });
+  const user = store.createUser({ name: name.trim(), email: email.trim() });
   res.status(201).json(user);
 });
 
@@ -47,7 +48,7 @@ router.put("/:id", (req, res) => {
   }
 
   const id = Number(req.params.id);
-  const user = store.updateUser(id, { name, email });
+  const user = store.updateUser(id, { name: name.trim(), email: email.trim() });
 
   if (!user) {
     return res.status(404).json({ error: "User not found" });
