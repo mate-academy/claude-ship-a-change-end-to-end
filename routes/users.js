@@ -8,7 +8,7 @@ function isNonEmptyString(value) {
 }
 
 function isValidEmail(value) {
-  return isNonEmptyString(value) && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+  return isNonEmptyString(value) && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
 }
 
 // GET /users — list every user

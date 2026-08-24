@@ -62,6 +62,19 @@ test("PUT /users/:id persists the update", async () => {
   assert.strictEqual(res.body.email, "updated@example.com");
 });
 
+test("PUT /users/:id accepts an otherwise-valid email with surrounding whitespace", async () => {
+  const created = await request(app)
+    .post("/users")
+    .send({ name: "Original Name", email: "original@example.com" });
+
+  const res = await request(app)
+    .put(`/users/${created.body.id}`)
+    .send({ name: "Updated Name", email: "  updated@example.com  " });
+
+  assert.strictEqual(res.status, 200);
+  assert.strictEqual(res.body.email, "updated@example.com");
+});
+
 test("PUT /users/:id does not change the user's id", async () => {
   const created = await request(app)
     .post("/users")
