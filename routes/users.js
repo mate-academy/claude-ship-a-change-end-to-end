@@ -48,6 +48,7 @@ router.put("/:id", (req, res) => {
   }
 
   res.json(user);
+  
 });
 
 module.exports = router;
