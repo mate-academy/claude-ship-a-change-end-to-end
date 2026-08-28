@@ -4,7 +4,7 @@ const store = require("../db/store");
 const router = express.Router();
 
 function hasRequiredFields({ name, email }) {
-  return Boolean(name) && Boolean(email);
+  return !!name && !!email;
 }
 
 // GET /users — list every user
