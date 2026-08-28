@@ -5,3 +5,5 @@ I decided to go on with Sonnet. I think this implementation does not need heavy 
 I went with one commit/one logical change. I did not push it deliberately until all tests passed.
 
 It found a duplicated condition check, which I told it to refactor since I love clean code.
+
+Added this extra line to reopen pull request, as the platform could not check it first
