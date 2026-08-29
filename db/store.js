@@ -24,4 +24,18 @@ function createUser({ name, email }) {
   return user;
 }
 
-module.exports = { getAllUsers, getUserById, createUser };
+// Updates an existing user's fields. Returns the updated user, or undefined
+// when no user has that id, so callers can tell "not found" from "updated".
+function updateUser(id, { name, email }) {
+  const user = getUserById(id);
+
+  if (!user) {
+    return undefined;
+  }
+
+  user.name = name;
+  user.email = email;
+  return user;
+}
+
+module.exports = { getAllUsers, getUserById, createUser, updateUser };
