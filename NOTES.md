@@ -18,3 +18,13 @@ I verified the implementation by running `npm test`, which confirmed that:
 - Successful updates return 200.
 - Missing users return 404.
 - Missing required fields return 400.
+
+I also ran an automated code review which flagged:
+- Potential crash if `req.body` is undefined.
+- Potential crash if `updateUser` is called without a second argument.
+- Falsy checks preventing updates to empty strings.
+
+I applied fixes for these by:
+- Using `req.body || {}` during destructuring.
+- Adding a default empty object to `updateUser` parameters.
+- Changing validation from falsy checks (`!name`) to explicit `undefined` checks.
