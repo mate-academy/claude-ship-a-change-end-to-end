@@ -35,9 +35,9 @@ router.post("/", (req, res) => {
 // PUT /users/:id — update a user; name and email are required
 router.put("/:id", (req, res) => {
   const id = Number(req.params.id);
-  const { name, email } = req.body;
+  const { name, email } = req.body || {};
 
-  if (!name || !email) {
+  if (name === undefined || email === undefined) {
     return res.status(400).json({ error: "name and email are required" });
   }
 
