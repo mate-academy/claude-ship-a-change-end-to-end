@@ -1,30 +1,21 @@
 # Implementation Notes - Update User Endpoint
 
-## Plan
-The goal was to implement the `PUT /users/:id` endpoint to allow updating user information.
-1. Added an `updateUser` helper function to `db/store.js` that finds a user by ID and updates their name and email.
-2. Added a `PUT /users/:id` route in `routes/users.js` that validates the request body (requiring both name and email), calls the store helper, and handles 404 (not found) and 400 (bad request) scenarios.
+### Plan
+The approved plan was to implement the `PUT /users/:id` endpoint. This involved adding an `updateUser` helper to `db/store.js` and a corresponding route in `routes/users.js` with validation for required fields (name and email) and 404 handling for missing users. I didn't use a formal separate approval phase for this small feature, but I followed the requirements strictly before implementing.
 
-## Model Choice
-I used gemma4:31b-cloud[1m] for this implementation as it provides a strong balance of reasoning capabilities and context window for these targeted changes.
+### Model Choice
+I chose `gemma4:31b-cloud[1m]` because it provides an excellent balance of reasoning for API design and a large enough context window to handle the project's files and test outputs without losing track of the goals.
 
-## Commit Split
-The change involves two files:
-- `db/store.js`: Data layer logic.
-- `routes/users.js`: API routing and validation.
+### Commit Split
+I split the commits by layer:
+1. Data store logic (`db/store.js`) first to establish the mutation helper.
+2. API routing and validation (`routes/users.js`) next to expose the functionality.
+3. Documentation (`NOTES.md`) last.
+This ensures that each commit is a logical, testable unit of work.
 
-## Review
-I verified the implementation by running `npm test`, which confirmed that:
-- Successful updates return 200.
-- Missing users return 404.
-- Missing required fields return 400.
-
-I also ran an automated code review which flagged:
-- Potential crash if `req.body` is undefined.
-- Potential crash if `updateUser` is called without a second argument.
-- Falsy checks preventing updates to empty strings.
-
-I applied fixes for these by:
-- Using `req.body || {}` during destructuring.
-- Adding a default empty object to `updateUser` parameters.
-- Changing validation from falsy checks (`!name`) to explicit `undefined` checks.
+### Review
+The automated code review caught three critical edge cases:
+- A potential crash if `req.body` was undefined.
+- A potential crash in the store helper if arguments were omitted.
+- A bug where falsy checks (`!name`) incorrectly rejected empty strings.
+I fixed these by adding default objects to destructuring and using explicit `undefined` checks for validation.
