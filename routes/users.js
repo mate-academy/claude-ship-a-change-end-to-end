@@ -20,9 +20,36 @@ router.get("/:id", (req, res) => {
   res.json(user);
 });
 
+// PUT /users/:id — update a user; name and email are required
+router.put("/:id", (req, res) => {
+  const { name: rawName, email: rawEmail } = req.body || {};
+  const name = typeof rawName === "string" ? rawName.trim() : "";
+  const email = typeof rawEmail === "string" ? rawEmail.trim() : "";
+
+  if (!name || !email) {
+    return res.status(400).json({ error: "name and email are required" });
+  }
+
+  const id = Number(req.params.id);
+
+  if (!Number.isInteger(id) || id <= 0) {
+    return res.status(400).json({ error: "id must be a positive integer" });
+  }
+
+  const user = store.updateUser(id, { name, email });
+
+  if (!user) {
+    return res.status(404).json({ error: "User not found" });
+  }
+
+  res.json(user);
+});
+
 // POST /users — create a user; name and email are required
 router.post("/", (req, res) => {
-  const { name, email } = req.body;
+  const { name: rawName, email: rawEmail } = req.body || {};
+  const name = typeof rawName === "string" ? rawName.trim() : "";
+  const email = typeof rawEmail === "string" ? rawEmail.trim() : "";
 
   if (!name || !email) {
     return res.status(400).json({ error: "name and email are required" });
