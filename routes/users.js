@@ -40,11 +40,13 @@ router.post("/", (req, res) => {
 
 // PUT /users/:id — replace an existing user; name and email are required
 router.put("/:id", (req, res) => {
-  const id = Number(req.params.id);
-
-  if (Number.isNaN(id)) {
+  // Number() alone would accept "0x2", "+2" and "2.0" as user 2, so match the
+  // digits first and only then convert.
+  if (!/^\d+$/.test(req.params.id)) {
     return res.status(400).json({ error: "id must be a number" });
   }
+
+  const id = Number(req.params.id);
 
   const { name, email } = req.body;
 

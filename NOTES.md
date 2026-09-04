@@ -49,6 +49,12 @@ shared state used by every other route — is isolated where it's easy to scruti
 - **An undefined helper.** The route referenced `isNonEmptyString` before I'd written
   it; the editor's diagnostics flagged it immediately, and `npm run lint` would have
   failed CI on it — lint is a hard gate ahead of tests in `.github/workflows/ci.yml`.
+- **An id guard that didn't match its own error message.** The review flagged that
+  `Number(req.params.id)` accepts far more than the `"id must be a number"` message
+  implies: `0x2`, `+2`, `2e0`, `2.0` and a URL-encoded `%202` all coerce to `2`, so
+  `PUT /users/0x2` quietly overwrote user 2 with a 200. The tests never would have
+  caught it — they only try a well-formed id and a fully non-numeric one. Fixed by
+  matching `/^\d+$/` against the raw param before converting.
 - **Confirmed fine: validation runs before the store lookup.** So `PUT /users/1` with a
   missing `email` is a 400, not a 200 with a half-applied update. The tests don't
   exercise the conflicting case (unknown id *and* a missing field), so the ordering is
