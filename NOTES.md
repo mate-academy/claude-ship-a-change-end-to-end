@@ -1,7 +1,7 @@
-# Coices from the start
+# Choices made
 
 - Chose to write the plan in details with testing of the test steps
-- Chose Sonnet 5 on Medium for the execution an chaned to palning mode first accepting a written plan and making som ajustments in details before accepting
+- Chose Sonnet 5 on Medium for the execution an chaned to palning mode first accepting a written plan and making som ajustments in details about how to respon on errors, before accepting
 
 # Plan Notes: Add PUT /users/:id (update user)
 
