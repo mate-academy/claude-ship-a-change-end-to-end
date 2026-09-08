@@ -35,6 +35,11 @@ router.post("/", (req, res) => {
 // PUT /users/:id — update an existing user; name and email are required
 router.put("/:id", (req, res) => {
   const id = Number(req.params.id);
+
+  if (!store.getUserById(id)) {
+    return res.status(404).json({ error: "User not found" });
+  }
+
   const { name, email } = req.body;
 
   if (!name || !email) {
@@ -42,11 +47,6 @@ router.put("/:id", (req, res) => {
   }
 
   const user = store.updateUser(id, { name, email });
-
-  if (!user) {
-    return res.status(404).json({ error: "User not found" });
-  }
-
   res.json(user);
 });
 
