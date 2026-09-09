@@ -3,6 +3,10 @@ const store = require("../db/store");
 
 const router = express.Router();
 
+// A pragmatic "looks like an email" check: non-empty local and domain parts
+// around a single @, with a dot in the domain. Not RFC-complete on purpose.
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 // GET /users — list every user
 router.get("/", (req, res) => {
   res.json(store.getAllUsers());
@@ -39,6 +43,10 @@ router.put("/:id", (req, res) => {
 
   if (!name || !email) {
     return res.status(400).json({ error: "name and email are required" });
+  }
+
+  if (!EMAIL_PATTERN.test(email)) {
+    return res.status(400).json({ error: "email is not valid" });
   }
 
   const user = store.updateUser(id, { name, email });
