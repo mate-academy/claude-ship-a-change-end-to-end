@@ -37,22 +37,32 @@ Add `PUT /users/:id` until `tests/update-user.test.js` is green.
   (both fields required); non-numeric/unknown id → `404`, no crash; error strings
   match the existing route
 
-Built in two commits so each fixed one failing test at a time:
+Built one logical change per commit so each fixed one failing test at a time:
 - `8690fdb` route (update + 404) → `updates an existing user` went green
-- `f411ad1` validation → `missing field returns 400` went green
+- `f411ad1` presence validation → `missing field returns 400` went green
+- `1d79d4a` email-format validation → from self-review (see below)
 
 ### Verification
 
 - [x] `npm test` after route commit — 8 pass / 1 fail (`missing field` still 200)
 - [x] `npm test` after validation commit — 9 pass / 0 fail, full suite green
+- [ ] `npm test` after email-format commit — expect 9 pass / 0 fail (pending user run)
 - [x] `tests/users.test.js` and health test still pass
 - [x] `tests/notes.test.js` — passes now that `NOTES.md` exists with real content
 
+### Self-review (Task 5)
+
+- [x] Reviewed the full diff before opening the PR
+- [x] Caught: `PUT /users/:id` validated field presence only, not email format —
+      `"grace@"` would be stored. Fixed in `1d79d4a` (`EMAIL_PATTERN` → 400).
+- [x] Confirmed fine: validation-before-lookup order, `NaN` id → 404, error-string
+      consistency with existing routes
+
 ### NOTES.md
 
-- [x] `NOTES.md` created for the exercise write-up
+- [x] `NOTES.md` created and completed — plan, model choice, commit split, review
 
-### Out of scope for now
+### Out of scope
 
-Model choice (Task 3), logical commits (Task 4), self-review (Task 5), PR (Task 6),
-full `NOTES.md` write-up (Task 7). `README.pt-BR.md` already created.
+`README.pt-BR.md` kept local (in `.gitignore`). `POST /users` left with its
+presence-only check to keep this PR scoped to the new endpoint.
