@@ -5,3 +5,6 @@ npm-debug.log*
 # Personal Claude Code settings stay on your machine; the shared
 # .claude/settings.json is committed, but this local override is not.
 .claude/settings.local.json
+
+# README.md traduzido - desnecessário enviar para o GIT
+README.pt-BR.md
