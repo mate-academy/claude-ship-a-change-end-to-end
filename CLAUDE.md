@@ -44,8 +44,7 @@ Built in two commits so each fixed one failing test at a time:
 ### Verification
 
 - [x] `npm test` after route commit — 8 pass / 1 fail (`missing field` still 200)
-- [ ] `npm test` after validation commit — expect all 3 `PUT /users/:id` tests green,
-      full suite green (pending user run)
+- [x] `npm test` after validation commit — 9 pass / 0 fail, full suite green
 - [x] `tests/users.test.js` and health test still pass
 - [x] `tests/notes.test.js` — passes now that `NOTES.md` exists with real content
 
