@@ -3,6 +3,9 @@ const store = require("../db/store");
 
 const router = express.Router();
 
+// Trim string input so a whitespace-only value is treated as missing.
+const trimmed = (value) => (typeof value === "string" ? value.trim() : value);
+
 // GET /users — list every user
 router.get("/", (req, res) => {
   res.json(store.getAllUsers());
@@ -30,6 +33,24 @@ router.post("/", (req, res) => {
 
   const user = store.createUser({ name, email });
   res.status(201).json(user);
+});
+
+// PUT /users/:id — replace a user's details; name and email are required
+router.put("/:id", (req, res) => {
+  const id = Number(req.params.id);
+
+  if (!Number.isInteger(id)) return res.status(400).json({ error: "id must be a number" });
+
+  const name = trimmed(req.body.name);
+  const email = trimmed(req.body.email);
+
+  if (!name || !email) return res.status(400).json({ error: "name and email are required" });
+
+  const user = store.updateUser(id, { name, email });
+
+  if (!user) return res.status(404).json({ error: "User not found" });
+
+  res.json(user);
 });
 
 module.exports = router;
