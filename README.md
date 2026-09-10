@@ -34,8 +34,8 @@ On your copy of the repo:
 - the working endpoint, with validation and a not-found response
 - a short `NOTES.md` explaining your choices
 - `npm test` green — the provided tests check both the endpoint and that `NOTES.md` is present
-- the branch opened as a pull request and submitted through the platform
-
+- the branch opened as a pull request against the main course repository, not your fork
+  
 The workflow steps below (planning, clean commits, a self-review, a clear PR description) are how you ship this well — and the habits the course is building. Grading is automatic, so it can only check the result: the tests passing. Do the workflow anyway; it's the point of the project.
 
 ### Before you start
@@ -86,7 +86,7 @@ Grading is automatic — `npm test` must be green on your branch. That single ch
 - [ ] the update-user endpoint updates an existing user, validates input (400 on a missing field), and returns 404 for a missing user
 - [ ] a `NOTES.md` is committed and has real content (your plan, model choice, commit split, and what review caught)
 
-Then submit your branch as a pull request through the platform.
+Then open your branch as a pull request against the main course repository — not your fork. The pull request is the submission; the platform picks it up automatically.
 
 ### Submit
 
@@ -95,8 +95,9 @@ Then submit your branch as a pull request through the platform.
    ```
    git push -u origin <your-branch>
    ```
-3. Open the pull request and submit it through the platform, which copies your branch for review.
-
+3. Open a pull request against the main repository, not your fork. The platform picks it up automatically — there is no separate submit button.
+4. Leave the pull request open. Do not merge or close it: grading runs on that pull request.
+   
 Before you submit, make sure that:
 
 - [ ] only the intended files are in the PR — no secrets, no stray changes
