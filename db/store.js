@@ -24,4 +24,20 @@ function createUser({ name, email }) {
   return user;
 }
 
-module.exports = { getAllUsers, getUserById, createUser };
+function putUserById(id, { name, email }) {
+  // Find the existing user by id
+  const user = users.find(u => u.id === id);
+
+  // If the user doesn't exist, you can return null or handle the error
+  if (!user) {
+    return null;
+  }
+
+  // Update the existing user's properties
+  user.name = name;
+  user.email = email;
+
+  return user;
+}
+
+module.exports = { getAllUsers, getUserById, createUser, putUserById };
