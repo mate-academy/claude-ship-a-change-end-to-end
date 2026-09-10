@@ -1,0 +1,4 @@
+My plan was: adding the putUserById function to db/store.js, adding the PUT route to routes/users.js, handling validation (400), handling not-found (404).
+I used Sonnet model, because Sonnet is a good balance of capability and speed for this type of task (small API endpoint), while Opus would be overkill and Haiku might be too limited for complex logic.
+I didn't split commits by each issue. Rather I've commited all at once, since this was a single focused feature (one endpoint), it made sense to keep it as one logical commit rather than splitting into tiny commits that don't add value on their own.
+Review caught several issues. I fixed all of them - the validation order (checking missing fields before calling the store), or ensuring the 404 response is returned correctly.  
