@@ -24,4 +24,10 @@ function createUser({ name, email }) {
   return user;
 }
 
-module.exports = { getAllUsers, getUserById, createUser };
+function putUserById(id, { name, email }) {
+  const user = { id: id, name, email };
+  users.push(user);
+  return user;
+}
+
+module.exports = { getAllUsers, getUserById, createUser, putUserById };

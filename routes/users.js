@@ -32,4 +32,23 @@ router.post("/", (req, res) => {
   res.status(201).json(user);
 });
 
+// PUT /users/:id — Update a single user, or 404 if it doesn't exist
+router.put("/:id", (req, res) => {
+  const id = Number(req.params.id);
+  const { name, email } = req.body;
+  const getuser = store.getUserById(id);
+
+   if (!getuser) {
+    return res.status(404).json({ error: "User not found" });
+  }
+
+  if (!name || !email) {
+    return res.status(400).json({ error: "Name and email are required" });
+  }
+
+  const user = store.putUserById(id, { name, email });
+
+  res.json(user);
+});
+
 module.exports = router;
