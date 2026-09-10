@@ -25,8 +25,18 @@ function createUser({ name, email }) {
 }
 
 function putUserById(id, { name, email }) {
-  const user = { id: id, name, email };
-  users.push(user);
+  // Find the existing user by id
+  const user = users.find(u => u.id === id);
+
+  // If the user doesn't exist, you can return null or handle the error
+  if (!user) {
+    return null;
+  }
+
+  // Update the existing user's properties
+  user.name = name;
+  user.email = email;
+
   return user;
 }
 
