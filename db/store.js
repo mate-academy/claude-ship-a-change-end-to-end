@@ -1,7 +1,3 @@
-// A tiny in-memory data store. It stands in for a real database so the
-// project stays easy to run. Data is not persisted — it resets every time
-// the server restarts.
-
 let users = [
   { id: 1, name: "Ada Lovelace", email: "ada@example.com" },
   { id: 2, name: "Alan Turing", email: "alan@example.com" },
@@ -14,7 +10,8 @@ function getAllUsers() {
 }
 
 function getUserById(id) {
-  return users.find((user) => user.id === id);
+  const numericId = Number(id);
+  return users.find((user) => user.id === numericId || user.id === id);
 }
 
 function createUser({ name, email }) {
@@ -24,4 +21,13 @@ function createUser({ name, email }) {
   return user;
 }
 
-module.exports = { getAllUsers, getUserById, createUser };
+function updateUser(id, { name, email }) {
+  const numericId = Number(id);
+  const user = users.find((u) => u.id === numericId || u.id === id);
+  if (!user) return null;
+  if (name !== undefined) user.name = name;
+  if (email !== undefined) user.email = email;
+  return user;
+}
+
+module.exports = { getAllUsers, getUserById, createUser, updateUser };

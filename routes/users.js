@@ -1,35 +1,44 @@
 const express = require("express");
-const store = require("../db/store");
-
 const router = express.Router();
+const { getAllUsers, getUserById, createUser, updateUser } = require("../db/store");
 
-// GET /users — list every user
 router.get("/", (req, res) => {
-  res.json(store.getAllUsers());
+  const users = getAllUsers();
+  res.json(users);
 });
 
-// GET /users/:id — fetch a single user, or 404 if it doesn't exist
-router.get("/:id", (req, res) => {
-  const id = Number(req.params.id);
-  const user = store.getUserById(id);
+router.post("/", (req, res) => {
+  const { name, email } = req.body || {};
+  if (!name || !email) {
+    return res.status(400).json({ error: "Name and email are required" });
+  }
+  const user = createUser({ name, email });
+  res.status(201).json(user);
+});
 
+router.get("/:id", (req, res) => {
+  const user = getUserById(req.params.id);
   if (!user) {
     return res.status(404).json({ error: "User not found" });
   }
-
   res.json(user);
 });
 
-// POST /users — create a user; name and email are required
-router.post("/", (req, res) => {
-  const { name, email } = req.body;
+router.put("/:id", (req, res) => {
+  const { id } = req.params;
+  const { name, email } = req.body || {};
 
   if (!name || !email) {
-    return res.status(400).json({ error: "name and email are required" });
+    return res.status(400).json({ error: "Validation failed: missing fields" });
   }
 
-  const user = store.createUser({ name, email });
-  res.status(201).json(user);
+  const existingUser = getUserById(id);
+  if (!existingUser) {
+    return res.status(404).json({ error: "User not found" });
+  }
+
+  const updatedUser = updateUser(id, { name, email });
+  res.json(updatedUser);
 });
 
 module.exports = router;
