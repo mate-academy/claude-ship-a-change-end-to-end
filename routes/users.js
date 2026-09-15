@@ -3,6 +3,10 @@ const store = require("../db/store");
 
 const router = express.Router();
 
+function isNonEmptyString(value) {
+  return typeof value === 'string' && value.trim().length > 0;
+}
+
 // GET /users — list every user
 router.get("/", (req, res) => {
   res.json(store.getAllUsers());
