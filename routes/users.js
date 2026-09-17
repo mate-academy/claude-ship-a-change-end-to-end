@@ -3,6 +3,8 @@ const store = require("../db/store");
 
 const router = express.Router();
 
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 // GET /users — list every user
 router.get("/", (req, res) => {
   res.json(store.getAllUsers());
@@ -30,6 +32,32 @@ router.post("/", (req, res) => {
 
   const user = store.createUser({ name, email });
   res.status(201).json(user);
+});
+
+// PUT /users/:id — replace a user's name and email; 400 on invalid input, 404 if missing
+router.put("/:id", (req, res) => {
+  const id = Number(req.params.id);
+  if (!Number.isInteger(id) || id <= 0) {
+    return res.status(400).json({ error: "id must be a positive integer" });
+  }
+
+  const { name, email } = req.body ?? {};
+  if (name == null || email == null) {
+    return res.status(400).json({ error: "name and email are required" });
+  }
+  if (typeof name !== "string" || name.trim() === "") {
+    return res.status(400).json({ error: "name must be a non-empty string" });
+  }
+  if (typeof email !== "string" || !EMAIL_PATTERN.test(email.trim())) {
+    return res.status(400).json({ error: "email must be a valid email address" });
+  }
+
+  const user = store.updateUser(id, { name: name.trim(), email: email.trim() });
+  if (!user) {
+    return res.status(404).json({ error: "User not found" });
+  }
+
+  res.json(user);
 });
 
 module.exports = router;
