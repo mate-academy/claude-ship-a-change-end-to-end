@@ -1,0 +1,9 @@
+# Notes — PUT /users/:id
+
+**Plan:** Added an `updateUser(id, { name, email })` helper to `db/store.js` (mirrors `getUserById`'s "return undefined on missing" contract, mutates in place and returns the record) and a `PUT /:id` route in `routes/users.js` that checks existence first (404, matching `GET /:id`), then validates `name`/`email` presence (400, reusing `POST /users`'s exact error shape), then updates. No edits were needed to the plan before approving — it matched the existing route/store conventions closely enough that it was approved as drafted.
+
+**Model:** Claude Sonnet 5, since this was a small, well-scoped change against clear existing patterns — no need for a heavier model, and Sonnet was fast enough to plan and implement in a couple of tight passes.
+
+**Commits:** Split into three: (1) the store helper, (2) the route wiring, (3) this NOTES.md. Splitting store from route lets a reviewer look at the data-layer contract (not-found handling, mutation) separately from the HTTP/validation concerns (status codes, error shapes, check ordering) — mirrors the codebase's own store/routes layering. NOTES.md is last since it has to describe what the review caught.
+
+**Review:** Checked the diff for edge cases — non-numeric `:id` params resolve to `NaN`, which correctly falls through to 404 (same as the existing `GET /:id`, not a regression). Validation reuses `POST /users`'s truthiness check as-is, so it shares that route's existing limitation of not validating types/format — intentionally left consistent rather than diverging. Noted a minor redundant lookup (`getUserById` called once for the existence check, again inside `updateUser`), acceptable for a tiny in-memory array and consistent with the file's existing unoptimized style. `npm run lint` was clean. Nothing required a fix.
