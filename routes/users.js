@@ -3,6 +3,9 @@ const store = require("../db/store");
 
 const router = express.Router();
 
+// A deliberately loose email check: something@something.tld, no spaces.
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 // GET /users — list every user
 router.get("/", (req, res) => {
   res.json(store.getAllUsers());
@@ -33,7 +36,8 @@ router.post("/", (req, res) => {
 });
 
 // PUT /users/:id — replace a user's name and email; 404 if the user doesn't
-// exist, 400 if either field is missing or not a non-empty string
+// exist, 400 if either field is missing/blank or the email is malformed.
+// Both fields are trimmed before they're validated and stored.
 router.put("/:id", (req, res) => {
   const id = Number(req.params.id);
 
@@ -41,14 +45,19 @@ router.put("/:id", (req, res) => {
     return res.status(404).json({ error: "User not found" });
   }
 
-  const { name, email } = req.body ?? {};
-  const isNonEmptyString = (value) =>
-    typeof value === "string" && value.trim() !== "";
+  const body = req.body ?? {};
+  const trimmed = (value) => (typeof value === "string" ? value.trim() : "");
+  const name = trimmed(body.name);
+  const email = trimmed(body.email);
 
-  if (!isNonEmptyString(name) || !isNonEmptyString(email)) {
+  if (!name || !email) {
     return res
       .status(400)
       .json({ error: "name and email are required and must be non-empty strings" });
+  }
+
+  if (!EMAIL_PATTERN.test(email)) {
+    return res.status(400).json({ error: "email must be a valid email address" });
   }
 
   const user = store.updateUser(id, { name, email });
