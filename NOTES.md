@@ -7,6 +7,9 @@ The approved plan was straightforward and followed existing patterns:
 2. Add a `PUT /users/:id` route to `routes/users.js` that validates input, handles errors, and uses the store function for data access
 3. No modifications were made to the approved plan — the existing codebase patterns were sufficient and well-established
 
+## Model Choice
+
+Used Claude Haiku 4.5 for this implementation. Haiku was appropriate because the feature scope is small and well-defined (one endpoint with clear test requirements), and Haiku provides fast, cost-effective inference for straightforward changes that don't require complex reasoning or multi-step architecture decisions.
 
 ## Commit Strategy
 
