@@ -37,7 +37,7 @@ router.put("/:id", (req, res) => {
   const id = Number(req.params.id);
   const { name, email } = req.body;
 
-  if (!name || !email) {
+  if (typeof name !== "string" || !name || typeof email !== "string" || !email) {
     return res.status(400).json({ error: "name and email are required" });
   }
 
