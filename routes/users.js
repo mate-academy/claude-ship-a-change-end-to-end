@@ -32,4 +32,38 @@ router.post("/", (req, res) => {
   res.status(201).json(user);
 });
 
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function isNonEmptyString(value) {
+  return typeof value === "string" && value.trim() !== "";
+}
+
+// PUT /users/:id — replace a user's name and email; both are required.
+// 400 on invalid input, 404 if the user doesn't exist.
+router.put("/:id", (req, res) => {
+  const id = Number(req.params.id);
+  const { name, email } = req.body || {};
+
+  if (!isNonEmptyString(name) || !isNonEmptyString(email)) {
+    return res
+      .status(400)
+      .json({ error: "name and email are required and must be non-empty strings" });
+  }
+
+  if (!EMAIL_PATTERN.test(email.trim())) {
+    return res.status(400).json({ error: "email must be a valid email address" });
+  }
+
+  // Number() accepts forms like "0x1" or "1e0"; only plain digits are real ids.
+  const user = /^\d+$/.test(req.params.id)
+    ? store.updateUser(id, { name: name.trim(), email: email.trim() })
+    : undefined;
+
+  if (!user) {
+    return res.status(404).json({ error: "User not found" });
+  }
+
+  res.json(user);
+});
+
 module.exports = router;
