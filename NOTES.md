@@ -14,4 +14,4 @@ Claude Sonnet 5.5. The change is small and well specified by the tests, so a fas
 Each commit is one logical change, so the data layer can be read separately from the HTTP layer.
 
 ## Review
-Not done yet: a self-review of the diff is still to do before opening the pull request. So far, `npm test` shows the three update-user tests passing. I had to run `npm install` first because `supertest` was missing.
+I reviewed the diff and probed the endpoint by hand beyond the provided tests. Confirmed fine: empty, whitespace-only and non-string fields return 400; a non-numeric id returns 404 instead of crashing; a request with no JSON body returns 400; a rejected update leaves the stored user unchanged. Two things I noticed and left alone, to match how `POST /users` behaves: values are stored as sent (not trimmed), and the email format is not checked. I had to run `npm install` first because `supertest` was missing.
