@@ -32,4 +32,57 @@ router.post("/", (req, res) => {
   res.status(201).json(user);
 });
 
+// A deliberately loose check: something@something.something, no spaces.
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// Checks a user payload and returns a list of problems, one per bad field.
+// An empty list means the input is valid.
+function validateUserInput(body) {
+  const errors = [];
+  const { name, email } = body;
+
+  if (name === undefined || name === null) {
+    errors.push("name is required");
+  } else if (typeof name !== "string" || name.trim() === "") {
+    errors.push("name must be a non-empty string");
+  }
+
+  if (email === undefined || email === null) {
+    errors.push("email is required");
+  } else if (typeof email !== "string" || email.trim() === "") {
+    errors.push("email must be a non-empty string");
+  } else if (!EMAIL_PATTERN.test(email.trim())) {
+    errors.push("email must be a valid email address");
+  }
+
+  return errors;
+}
+
+// Turns a route param into a user id, or null if it isn't a plain positive
+// integer. Number() alone is too lenient: it reads "0x1", "1e0" and " 1" as 1.
+function parseUserId(param) {
+  return /^[1-9]\d*$/.test(param) ? Number(param) : null;
+}
+
+// PUT /users/:id — replace a user's name and email; both are required
+router.put("/:id", (req, res) => {
+  const id = parseUserId(req.params.id);
+  const errors = validateUserInput(req.body);
+
+  if (errors.length > 0) {
+    return res.status(400).json({ error: errors.join("; "), errors });
+  }
+
+  const name = req.body.name.trim();
+  const email = req.body.email.trim();
+  // A malformed id can never match a user, so it's a 404 like any unknown id.
+  const user = id === null ? undefined : store.updateUser(id, { name, email });
+
+  if (!user) {
+    return res.status(404).json({ error: "User not found" });
+  }
+
+  res.json(user);
+});
+
 module.exports = router;
