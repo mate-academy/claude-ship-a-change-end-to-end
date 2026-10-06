@@ -32,4 +32,39 @@ router.post("/", (req, res) => {
   res.status(201).json(user);
 });
 
+// PUT /users/:id — replace a user's name and email; 400 on bad input, 404 if missing
+router.put("/:id", (req, res) => {
+  const id = Number(req.params.id);
+  if (!Number.isInteger(id) || id < 1) {
+    return res.status(400).json({ error: "id must be a positive integer" });
+  }
+
+  const { name, email } = req.body || {};
+  const errors = [];
+
+  if (typeof name !== "string" || name.trim() === "") {
+    errors.push("name is required and must be a non-empty string");
+  }
+  if (typeof email !== "string" || email.trim() === "") {
+    errors.push("email is required and must be a non-empty string");
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+    errors.push("email must be a valid email address");
+  }
+
+  if (errors.length > 0) {
+    return res.status(400).json({ error: errors.join("; ") });
+  }
+
+  const user = store.updateUser(id, {
+    name: name.trim(),
+    email: email.trim(),
+  });
+
+  if (!user) {
+    return res.status(404).json({ error: "User not found" });
+  }
+
+  res.json(user);
+});
+
 module.exports = router;
