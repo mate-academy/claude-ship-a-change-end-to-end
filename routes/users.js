@@ -32,4 +32,22 @@ router.post("/", (req, res) => {
   res.status(201).json(user);
 });
 
+// PUT /users/:id — replace required user fields through the store
+router.put("/:id", (req, res) => {
+  const id = Number(req.params.id);
+  const { name, email } = req.body || {};
+  if (!Number.isInteger(id) || id < 1) {
+    return res.status(400).json({ error: "id must be a positive integer" });
+  }
+  if (typeof name !== "string" || !name.trim() ||
+      typeof email !== "string" || !email.trim()) {
+    return res.status(400).json({ error: "name and email must be non-empty strings" });
+  }
+  const user = store.updateUser(id, { name: name.trim(), email: email.trim() });
+  if (!user) {
+    return res.status(404).json({ error: "User not found" });
+  }
+  return res.json(user);
+});
+
 module.exports = router;
