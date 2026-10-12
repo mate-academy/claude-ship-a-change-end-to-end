@@ -34,6 +34,11 @@ router.post("/", (req, res) => {
 
 // PUT /users/:id — update a user; name and email are required, 404 if unknown
 router.put("/:id", (req, res) => {
+  // Only plain decimal ids match; Number() alone would accept "0x1", "1e0", "1.0"
+  if (!/^\d+$/.test(req.params.id)) {
+    return res.status(404).json({ error: "User not found" });
+  }
+
   const id = Number(req.params.id);
   const { name, email } = req.body || {};
 
