@@ -32,4 +32,24 @@ router.post("/", (req, res) => {
   res.status(201).json(user);
 });
 
+// PUT /users/:id — replace a user's name and email; 400 on invalid input, 404 if missing
+router.put("/:id", (req, res) => {
+  const id = Number(req.params.id);
+  const { name, email } = req.body || {};
+
+  const isValid = (value) => typeof value === "string" && value.trim() !== "";
+  if (!isValid(name) || !isValid(email)) {
+    return res.status(400).json({ error: "name and email are required" });
+  }
+
+  try {
+    res.json(store.updateUser(id, { name: name.trim(), email: email.trim() }));
+  } catch (err) {
+    if (err.code === "USER_NOT_FOUND") {
+      return res.status(404).json({ error: "User not found" });
+    }
+    throw err;
+  }
+});
+
 module.exports = router;
