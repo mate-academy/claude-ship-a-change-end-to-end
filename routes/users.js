@@ -20,6 +20,23 @@ router.get("/:id", (req, res) => {
   res.json(user);
 });
 
+// PUT /users/:id — update an existing user, or 404 if it doesn't exist
+router.put("/:id", (req, res) => {
+  const id = Number(req.params.id);
+  const { name, email } = req.body;
+
+  if (!name || !email) {
+    return res.status(400).json({ error: "name and email are required" });
+  }
+
+  const user = store.updateUser(id, { name, email });
+  if (!user) {
+    return res.status(404).json({ error: "User not found" });
+  }
+
+  res.json(user);
+});
+
 // POST /users — create a user; name and email are required
 router.post("/", (req, res) => {
   const { name, email } = req.body;
