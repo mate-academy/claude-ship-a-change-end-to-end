@@ -1,5 +1,5 @@
 // A tiny in-memory data store. It stands in for a real database so the
-// project stays easy to run. Data is not persisted â€” it resets every time
+// project stays easy to run. Data is not persisted — it resets every time
 // the server restarts.
 
 let users = [
@@ -24,4 +24,22 @@ function createUser({ name, email }) {
   return user;
 }
 
-module.exports = { getAllUsers, getUserById, createUser };
+function updateUser(id, { name, email }) {
+  const user = getUserById(id);
+
+  if (!user) {
+    return null;
+  }
+
+  user.name = name;
+  user.email = email;
+
+  return user;
+}
+
+module.exports = {
+  getAllUsers,
+  getUserById,
+  createUser,
+  updateUser,
+};
