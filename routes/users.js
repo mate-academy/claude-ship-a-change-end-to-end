@@ -3,6 +3,10 @@ const store = require("../db/store");
 
 const router = express.Router();
 
+function hasNameAndEmail({ name, email }) {
+  return Boolean(name && email);
+}
+
 // GET /users — list every user
 router.get("/", (req, res) => {
   res.json(store.getAllUsers());
@@ -24,12 +28,30 @@ router.get("/:id", (req, res) => {
 router.post("/", (req, res) => {
   const { name, email } = req.body;
 
-  if (!name || !email) {
+  if (!hasNameAndEmail(req.body)) {
     return res.status(400).json({ error: "name and email are required" });
   }
 
   const user = store.createUser({ name, email });
   res.status(201).json(user);
+});
+
+// PUT /users/:id — update an existing user; name and email are required
+router.put("/:id", (req, res) => {
+  const { name, email } = req.body;
+
+  if (!hasNameAndEmail(req.body)) {
+    return res.status(400).json({ error: "name and email are required" });
+  }
+
+  const id = Number(req.params.id);
+  const user = store.updateUser(id, { name, email });
+
+  if (!user) {
+    return res.status(404).json({ error: "User not found" });
+  }
+
+  res.json(user);
 });
 
 module.exports = router;
