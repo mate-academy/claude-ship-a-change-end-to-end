@@ -3,6 +3,10 @@ const store = require("../db/store");
 
 const router = express.Router();
 
+function isValidString(value) {
+  return typeof value === "string" && value.trim().length > 0;
+}
+
 // GET /users — list every user
 router.get("/", (req, res) => {
   res.json(store.getAllUsers());
@@ -17,6 +21,27 @@ router.get("/:id", (req, res) => {
     return res.status(404).json({ error: "User not found" });
   }
 
+  res.json(user);
+});
+
+// PUT /users/:id — update an existing user; 404 if missing, 400 if name/email invalid
+router.put("/:id", (req, res) => {
+  const id = Number(req.params.id);
+  const existing = store.getUserById(id);
+
+  if (!existing) {
+    return res.status(404).json({ error: "User not found" });
+  }
+
+  const { name, email } = req.body;
+
+  if (!isValidString(name) || !isValidString(email)) {
+    return res
+      .status(400)
+      .json({ error: "name and email are required and must be non-empty strings" });
+  }
+
+  const user = store.updateUser(id, { name: name.trim(), email: email.trim() });
   res.json(user);
 });
 
