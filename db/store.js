@@ -24,4 +24,19 @@ function createUser({ name, email }) {
   return user;
 }
 
-module.exports = { getAllUsers, getUserById, createUser };
+// Replaces the name and email of an existing user. Returns the updated user,
+// or undefined when no user has that id — callers decide what to do about it.
+function updateUser(id, { name, email }) {
+  const user = getUserById(id);
+
+  if (!user) {
+    return undefined;
+  }
+
+  user.name = name;
+  user.email = email;
+
+  return user;
+}
+
+module.exports = { getAllUsers, getUserById, createUser, updateUser };
