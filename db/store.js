@@ -24,4 +24,14 @@ function createUser({ name, email }) {
   return user;
 }
 
-module.exports = { getAllUsers, getUserById, createUser };
+function updateUser(id, { name, email }) {
+  const user = users.find((u) => u.id === id);
+  if (!user) {
+    return null;
+  }
+  if (name !== undefined) user.name = name;
+  if (email !== undefined) user.email = email;
+  return user;
+}
+
+module.exports = { getAllUsers, getUserById, createUser, updateUser };
