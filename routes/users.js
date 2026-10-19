@@ -3,6 +3,8 @@ const store = require("../db/store");
 
 const router = express.Router();
 
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 // GET /users — list every user
 router.get("/", (req, res) => {
   res.json(store.getAllUsers());
@@ -32,12 +34,10 @@ router.post("/", (req, res) => {
   res.status(201).json(user);
 });
 
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
 // PUT /users/:id — replace a user's name and email; both are required
 router.put("/:id", (req, res) => {
   const id = Number(req.params.id);
-  const { name, email } = req.body || {};
+  const { name, email } = req.body;
 
   if (
     typeof name !== "string" ||
