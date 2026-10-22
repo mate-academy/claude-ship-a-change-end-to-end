@@ -32,4 +32,13 @@ router.post("/", (req, res) => {
   res.status(201).json(user);
 });
 
+// PUT /users/:id — replace a user's name and email
+router.put("/:id", (req, res) => {
+  const id = Number(req.params.id);
+  const { name, email } = req.body;
+
+  const user = store.updateUser(id, { name, email });
+  res.json(user);
+});
+
 module.exports = router;
