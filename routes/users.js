@@ -38,6 +38,11 @@ router.put("/:id", (req, res) => {
   const { name, email } = req.body;
 
   const user = store.updateUser(id, { name, email });
+
+  if (!user) {
+    return res.status(404).json({ error: "User not found" });
+  }
+
   res.json(user);
 });
 
