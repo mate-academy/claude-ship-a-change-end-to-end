@@ -10,6 +10,20 @@ app.use(express.json());
 app.use("/users", usersRoutes);
 app.use("/health", healthRoutes);
 
+app.use((err, req, res, next) => {
+  if (err.type === "entity.parse.failed") {
+    return res.status(400).json({
+      error: "The request body isn't valid JSON. Please check its formatting and try again.",
+    });
+  }
+  if (err.type === "entity.too.large") {
+    return res.status(413).json({
+      error: "The request body is too large. Please send a smaller payload.",
+    });
+  }
+  next(err);
+});
+
 const PORT = process.env.PORT || 3000;
 
 // Only start the server when this file is run directly (e.g. `npm run dev`),
