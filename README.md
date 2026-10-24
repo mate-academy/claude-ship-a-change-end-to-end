@@ -100,6 +100,8 @@ Then open your branch as a pull request against the main course repository — n
    
 Before you submit, make sure that:
 
+
+
 - [ ] only the intended files are in the PR — no secrets, no stray changes
 - [ ] `npm test` passes on your branch
 - [ ] the PR description explains what, why, and what to test
