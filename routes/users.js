@@ -43,7 +43,10 @@ router.put("/:id", (req, res) => {
   if (!isValidString(name) || !isValidString(email)) {
     return res.status(400).json({ error: "name and email are required" });
   }
-  const user = store.updateUser(id, { name, email });
+  if (!email.includes("@")) {
+    return res.status(400).json({ error: "email must contain @" });
+  }
+  const user = store.updateUser(id, { name: name.trim(), email: email.trim() });
   if (!user) {
     return res.status(404).json({ error: "User not found" });
   }
