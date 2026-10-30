@@ -47,7 +47,7 @@ router.put("/:id", (req, res) => {
     return res.status(400).json({ error: 'email must contain "@"' });
   }
 
-  const user = store.updateUser(id, { name, email });
+  const user = store.updateUser(id, { name: name.trim(), email: email.trim() });
 
   if (!user) {
     return res.status(404).json({ error: "User not found" });
