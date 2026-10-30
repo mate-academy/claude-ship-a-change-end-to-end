@@ -35,7 +35,7 @@ router.post("/", (req, res) => {
 // PUT /users/:id — replace a user's name and email; 400 on bad input, 404 if missing
 router.put("/:id", (req, res) => {
   const id = Number(req.params.id);
-  const { name, email } = req.body;
+  const { name, email } = req.body || {};
 
   if (name === undefined || email === undefined) {
     return res.status(400).json({ error: "name and email are required" });
