@@ -2,6 +2,7 @@ const express = require("express");
 const store = require("../db/store");
 const config = require("../config");
 const validateId = require("../middleware/validateId");
+const { requireUserId } = validateId;
 const { validateUserInput } = require("../utils");
 
 const router = express.Router();
@@ -15,7 +16,7 @@ router.get("/", (req, res) => {
 });
 
 // GET /users/:id — fetch a single user, or 404 if it doesn't exist
-router.get("/:id", (req, res) => {
+router.get("/:id", requireUserId, (req, res) => {
   const user = store.getUserById(req.userId);
 
   if (!user) {
@@ -38,7 +39,7 @@ router.post("/", (req, res) => {
 });
 
 // PUT /users/:id — replace a user's name and email; 400 on bad input, 404 if missing
-router.put("/:id", (req, res) => {
+router.put("/:id", requireUserId, (req, res) => {
   const { error, data } = validateUserInput(req.body);
   if (error) {
     return res.status(400).json({ error });

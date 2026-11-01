@@ -6,7 +6,9 @@ const { parseId, isIdInRange } = require("../utils");
 // On success the parsed id is stored on req.userId.
 function validateId(endpoints) {
   return (req, res, next, raw) => {
-    const routes = Object.hasOwn(endpoints, req.method) ? endpoints[req.method] : null;
+    // Express serves HEAD with the GET handler, so validate it as GET.
+    const method = req.method === "HEAD" ? "GET" : req.method;
+    const routes = Object.hasOwn(endpoints, method) ? endpoints[method] : null;
     const path = req.baseUrl + req.route.path; // route pattern, e.g. "/users/:id"
 
     if (!routes || !Object.hasOwn(routes, path) || routes[path] !== true) {
@@ -26,4 +28,19 @@ function validateId(endpoints) {
   };
 }
 
+// Guard for handlers that rely on req.userId. If an :id route was never added
+// to config.idValidatedEndpoints, fail loudly instead of looking up undefined
+// and answering with a misleading 404.
+function requireUserId(req, res, next) {
+  if (req.userId === undefined) {
+    return next(
+      new Error(
+        `req.userId is not set for ${req.method} ${req.baseUrl}${req.route.path}: add the endpoint to config.idValidatedEndpoints`,
+      ),
+    );
+  }
+  next();
+}
+
 module.exports = validateId;
+module.exports.requireUserId = requireUserId;
