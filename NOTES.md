@@ -1,5 +1,3 @@
-I used opusplan model.
-
 ## Plan
 Planned in plan mode first, then implemented one feature at a time with a commit after each.
 
