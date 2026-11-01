@@ -11,7 +11,8 @@
   },
   "license": "MIT",
   "dependencies": {
-    "express": "^4.19.2"
+    "express": "^4.19.2",
+    "validator": "^13.15.35"
   },
   "devDependencies": {
     "eslint": "^8.57.0",
