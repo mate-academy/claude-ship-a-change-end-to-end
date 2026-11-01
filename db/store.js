@@ -2,6 +2,8 @@
 // project stays easy to run. Data is not persisted — it resets every time
 // the server restarts.
 
+const { isNonEmptyString } = require("../utils");
+
 let users = [
   { id: 1, name: "Ada Lovelace", email: "ada@example.com" },
   { id: 2, name: "Alan Turing", email: "alan@example.com" },
@@ -26,7 +28,13 @@ function createUser({ name, email }) {
 
 // Update an existing user's name and email in place.
 // Returns the updated user, or undefined if no user has that id.
-function updateUser(id, { name, email }) {
+// Throws a TypeError if name or email is missing or not a non-empty string,
+// so a direct caller can never wipe a field with undefined.
+function updateUser(id, { name, email } = {}) {
+  if (!isNonEmptyString(name) || !isNonEmptyString(email)) {
+    throw new TypeError("updateUser requires non-empty string name and email");
+  }
+
   const user = getUserById(id);
   if (!user) {
     return undefined;
