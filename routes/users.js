@@ -34,8 +34,15 @@ router.post("/", (req, res) => {
     return res.status(400).json({ error });
   }
 
-  const user = store.createUser(data);
-  res.status(201).json(user);
+  try {
+    const user = store.createUser(data);
+    res.status(201).json(user);
+  } catch (err) {
+    if (err instanceof RangeError) {
+      return res.status(507).json({ error: err.message });
+    }
+    throw err;
+  }
 });
 
 // PUT /users/:id — replace a user's name and email; 400 on bad input, 404 if missing

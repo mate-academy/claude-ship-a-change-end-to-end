@@ -2,6 +2,7 @@
 // project stays easy to run. Data is not persisted — it resets every time
 // the server restarts.
 
+const config = require("../config");
 const { isNonEmptyString } = require("../utils");
 
 let users = [
@@ -19,7 +20,12 @@ function getUserById(id) {
   return users.find((user) => user.id === id);
 }
 
+// Throws a RangeError once the next id would exceed config.maxUserId, because
+// the API rejects such ids and the user would be unreachable.
 function createUser({ name, email }) {
+  if (nextId > config.maxUserId) {
+    throw new RangeError(`user limit of ${config.maxUserId} reached`);
+  }
   const user = { id: nextId, name, email };
   nextId += 1;
   users.push(user);
