@@ -37,4 +37,24 @@ router.post("/", (req, res) => {
   res.status(201).json(user);
 });
 
+// PUT /users/:id — replace a user's name and email; 400 on bad input, 404 if missing
+router.put("/:id", (req, res) => {
+  const id = parseId(req.params.id);
+  if (id === null) {
+    return res.status(400).json({ error: "id must be a positive integer" });
+  }
+
+  const { error, data } = validateUserInput(req.body);
+  if (error) {
+    return res.status(400).json({ error });
+  }
+
+  const user = store.updateUser(id, data);
+  if (!user) {
+    return res.status(404).json({ error: "User not found" });
+  }
+
+  res.json(user);
+});
+
 module.exports = router;
