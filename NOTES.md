@@ -33,6 +33,14 @@ A code review of the first six commits raised a few points, addressed in separat
 - `store.updateUser` throws a `TypeError` unless name and email are non-empty strings, so a direct caller passing `undefined` can't wipe a field.
 - `CLAUDE.md` now describes this flow, so future routes use the middleware and add themselves to the endpoint map.
 
+## Second review: bugs and edge cases
+A follow-up review ran the real app against edge cases and found:
+- **Bug:** `HEAD /users/:id` returned 404. Express serves HEAD with the GET handler but `req.method` stays `HEAD`, so `validateId` skipped it and `req.userId` was undefined. Fixed by treating HEAD as GET, and a `requireUserId` guard now makes an unconfigured `:id` route fail loudly instead of returning a quiet 404.
+- Users created past `maxUserId` became unreachable (ids rejected as out of range). `createUser` now throws a `RangeError` at the limit and `POST /users` answers 507.
+- Malformed JSON and bad URL encoding (`GET /users/%`) gave an HTML error page and a stack trace. An error handler in `server.js` now returns `{ error }` JSON (400, 413 for oversized bodies, generic logged 500).
+- Names had no length limit. `config.maxNameLength` (100) is now enforced by `validateUserInput`.
+- Tests added: `tests/utils.test.js`, `tests/validate-id.test.js`, `tests/store.test.js`, `tests/errors.test.js`. The new tests for HEAD, the createUser cap and the error handler were run first and failed before the fix.
+
 ## Commit split
 1. Ignore JetBrains `.idea/` directory.
 2. Add `utils.js` with shared id and user-input helpers (only that file).
@@ -50,7 +58,15 @@ Review follow-ups:
 12. Use the middleware for GET and PUT `/users/:id`.
 13. Reject missing or invalid fields in `store.updateUser`.
 14. Update `CLAUDE.md`.
-15. Refresh `NOTES.md` (this commit).
+15. Refresh `NOTES.md`.
+
+Second review fixes, each with tests:
+16. Add unit tests for the utils helpers.
+17. Limit user name length via `config.maxNameLength`.
+18. Fix `HEAD /users/:id` and fail loudly on unconfigured id routes.
+19. Cap `createUser` at `config.maxUserId` and add store tests.
+20. Return JSON for malformed-request errors via an error handler.
+21. Update `CLAUDE.md` and `NOTES.md` (this commit).
 
 ## Review
 - `npm run lint` clean and the full test suite passing.
