@@ -1,8 +1,13 @@
 const express = require("express");
 const store = require("../db/store");
-const { parseId, validateUserInput } = require("../utils");
+const config = require("../config");
+const validateId = require("../middleware/validateId");
+const { validateUserInput } = require("../utils");
 
 const router = express.Router();
+
+// Validate :id (format and range) for the endpoints listed in config.
+router.param("id", validateId(config.idValidatedEndpoints));
 
 // GET /users — list every user
 router.get("/", (req, res) => {
@@ -11,12 +16,7 @@ router.get("/", (req, res) => {
 
 // GET /users/:id — fetch a single user, or 404 if it doesn't exist
 router.get("/:id", (req, res) => {
-  const id = parseId(req.params.id);
-  if (id === null) {
-    return res.status(400).json({ error: "id must be a positive integer" });
-  }
-
-  const user = store.getUserById(id);
+  const user = store.getUserById(req.userId);
 
   if (!user) {
     return res.status(404).json({ error: "User not found" });
@@ -39,17 +39,12 @@ router.post("/", (req, res) => {
 
 // PUT /users/:id — replace a user's name and email; 400 on bad input, 404 if missing
 router.put("/:id", (req, res) => {
-  const id = parseId(req.params.id);
-  if (id === null) {
-    return res.status(400).json({ error: "id must be a positive integer" });
-  }
-
   const { error, data } = validateUserInput(req.body);
   if (error) {
     return res.status(400).json({ error });
   }
 
-  const user = store.updateUser(id, data);
+  const user = store.updateUser(req.userId, data);
   if (!user) {
     return res.status(404).json({ error: "User not found" });
   }
