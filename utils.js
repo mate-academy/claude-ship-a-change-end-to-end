@@ -1,9 +1,10 @@
 // Shared, side-effect-free helpers used by the route handlers.
 
+const validator = require("validator");
+
 const config = require("./config");
 
 const ID_PATTERN = /^[1-9]\d*$/;
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+$/;
 
 // Parse a route id param written as plain positive decimal digits, or return
 // null if malformed. Stricter than Number(): rejects "abc", "0", "-1", "1.5",
@@ -25,7 +26,7 @@ function isNonEmptyString(value) {
 }
 
 function isValidEmail(value) {
-  return typeof value === "string" && EMAIL_PATTERN.test(value.trim());
+  return typeof value === "string" && validator.isEmail(value.trim());
 }
 
 // Validate a user request body. Returns { error } or { data: { name, email } }
