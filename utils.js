@@ -1,16 +1,23 @@
 // Shared, side-effect-free helpers used by the route handlers.
 
+const config = require("./config");
+
 const ID_PATTERN = /^[1-9]\d*$/;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+$/;
 
-// Parse a route id param into a positive safe integer, or null if malformed.
-// Stricter than Number(): rejects "abc", "0", "-1", "1.5", "01", "1e2", "0x10".
+// Parse a route id param written as plain positive decimal digits, or return
+// null if malformed. Stricter than Number(): rejects "abc", "0", "-1", "1.5",
+// "01", "1e2", "0x10". Range is checked separately by isIdInRange.
 function parseId(raw) {
   if (typeof raw !== "string" || !ID_PATTERN.test(raw)) {
     return null;
   }
-  const id = Number(raw);
-  return Number.isSafeInteger(id) ? id : null;
+  return Number(raw);
+}
+
+// True when id is an integer between 1 and the configured maximum.
+function isIdInRange(id, max = config.maxUserId) {
+  return Number.isInteger(id) && id >= 1 && id <= max;
 }
 
 function isNonEmptyString(value) {
@@ -36,4 +43,4 @@ function validateUserInput(body) {
   return { data: { name: name.trim(), email: email.trim() } };
 }
 
-module.exports = { parseId, isNonEmptyString, isValidEmail, validateUserInput };
+module.exports = { parseId, isIdInRange, isNonEmptyString, isValidEmail, validateUserInput };
