@@ -1,0 +1,9 @@
+# Notes
+
+**Plan.** Add `updateUser(id, {name, email})` to `db/store.js` (returns `undefined` for an unknown id), then add `PUT /users/:id` in `routes/users.js` that validates input (400), calls the store, and returns 404 when nothing is found. I laid the plan out in text from reading the tests and existing routes rather than using the interactive plan-mode UI, so there was no separate edit-before-approve step.
+
+**Model.** Claude Sonnet 5.5: the change is small and follows an existing pattern, so a fast mid-size model is enough and a larger one would add cost without benefit.
+
+**Commits.** Three commits, one logical change each: (1) the store helper, (2) the route with validation and not-found handling, (3) this write-up. The store change is independently reviewable and the route depends on it.
+
+**Review.** I reviewed the diff by hand. Confirmed fine: unknown or non-numeric ids return 404 instead of crashing, a missing body is handled (`req.body || {}`), and data access goes through the store. One design choice: validation runs before the lookup, so an invalid body to an unknown id returns 400, not 404. Fields must be non-empty strings (trimmed), which is stricter than the POST route.
