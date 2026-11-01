@@ -37,6 +37,9 @@ function validateUserInput(body) {
   if (!isNonEmptyString(name)) {
     return { error: "name is required and must be a non-empty string" };
   }
+  if (name.trim().length > config.maxNameLength) {
+    return { error: `name must be at most ${config.maxNameLength} characters` };
+  }
   if (!isValidEmail(email)) {
     return { error: "email is required and must be a valid email address" };
   }

@@ -76,3 +76,12 @@ test("validateUserInput tolerates a missing or non-object body", () => {
     assert.ok(validateUserInput(body).error, `body ${JSON.stringify(body)} should give an error`);
   }
 });
+
+test("validateUserInput enforces the maximum name length after trimming", () => {
+  const atLimit = "x".repeat(config.maxNameLength);
+  assert.ok(validateUserInput({ name: atLimit, email: "a@b.co" }).data);
+  assert.ok(validateUserInput({ name: `  ${atLimit}  `, email: "a@b.co" }).data);
+
+  const result = validateUserInput({ name: atLimit + "x", email: "a@b.co" });
+  assert.match(result.error, new RegExp(`at most ${config.maxNameLength}`));
+});
