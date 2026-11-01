@@ -1,5 +1,6 @@
 const express = require("express");
 const store = require("../db/store");
+const { parseId, validateUserInput } = require("../utils");
 
 const router = express.Router();
 
@@ -10,7 +11,11 @@ router.get("/", (req, res) => {
 
 // GET /users/:id — fetch a single user, or 404 if it doesn't exist
 router.get("/:id", (req, res) => {
-  const id = Number(req.params.id);
+  const id = parseId(req.params.id);
+  if (id === null) {
+    return res.status(400).json({ error: "id must be a positive integer" });
+  }
+
   const user = store.getUserById(id);
 
   if (!user) {
@@ -22,13 +27,13 @@ router.get("/:id", (req, res) => {
 
 // POST /users — create a user; name and email are required
 router.post("/", (req, res) => {
-  const { name, email } = req.body;
+  const { error, data } = validateUserInput(req.body);
 
-  if (!name || !email) {
-    return res.status(400).json({ error: "name and email are required" });
+  if (error) {
+    return res.status(400).json({ error });
   }
 
-  const user = store.createUser({ name, email });
+  const user = store.createUser(data);
   res.status(201).json(user);
 });
 
