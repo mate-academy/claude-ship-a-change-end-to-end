@@ -3,6 +3,9 @@ const store = require("../db/store");
 
 const router = express.Router();
 
+// Deliberately loose: something@something.tld with no spaces.
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 // GET /users — list every user
 router.get("/", (req, res) => {
   res.json(store.getAllUsers());
@@ -42,6 +45,9 @@ router.put("/:id", (req, res) => {
     return res
       .status(400)
       .json({ error: "name and email are required and must be non-empty strings" });
+  }
+  if (!EMAIL_PATTERN.test(email.trim())) {
+    return res.status(400).json({ error: "email must be a valid email address" });
   }
 
   const user = store.updateUser(id, { name: name.trim(), email: email.trim() });
