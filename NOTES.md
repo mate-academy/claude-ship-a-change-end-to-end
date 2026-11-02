@@ -1,49 +1,16 @@
-Sonnet я обрала.
-Вважаю, що він чудово впорається з читанням тестів та точковим виправленням коду.
+# Замітки щодо інтеграції Claude Code у проєкт
 
- Затверджений план:
- Plan: PUT /users/:id
+1. **Підключений MCP-сервер та права доступу**
+   До проєкту було успішно інтегровано локальний сервер пам'яті (`@modelcontextprotocol/server-filesystem`). Він необхідний у цьому репозиторії для збереження довгострокового контексту розробки, архітектурних рішень та зв'язків між модулями Express API. У файлі `.claude/settings.json` через блок `permissions.allow` було встановлено мінімально необхідні права на читання та побудову сутностей (`mcp__memory__read_graph`, `mcp__memory__create_entities`), а потенційно небезпечні деструктивні інструменти заблоковано в секції `deny`.
 
-What the tests need (tests/update-user.test.js):
-- A va
-- An unknown id (9999) with a valid body returns 404.
-- A body with a field missing (name only) for id 1 returns 400.
+2. **Повторювана навичка розробки (Skill)**
+   Створена навичка у файлі `.claude/skills/express-error-handler/SKILL.md` фіксує єдиний командний стандарт обробки помилок в асинхронних маршрутах Express (обов'язкове використання блоків try/catch та передача помилки виключно через функцію `next(error)`). Опис тригера було сформульовано дуже конкретно (реагувати лише на запити про створення/зміну роутів у папці `routes/`), завдяки чому Клод безпомилково задіяв навичку під час додавання маршруту `/api/status`, не змішуючи її з іншими завданнями.
 
-1. db/s
-  if (!user) return undefined;
-  user.name = name;
-  user.e
-  return user;
-}
-- It returns undefined when the user doesn't exist, the same way getUserById does.
-- It updates the object in place, so the users array stays consistent.
-- Add it to module.exports.
+3. **Користувацька команда (Command)**
+   У репозиторій було додано власну команду в `.claude/commands/review.md`, яка викликається через швидке сполучення `/review`. Її варто використовувати як комбінацію клавіш, оскільки вона миттєво запускає комплексний автоматичний аудит кодової бази на відповідність архітектурі Express, перевіряє наявність обов'язкових обробників помилок та виявляє залишений тимчасовий код (`console.log`) чи невикористані імпорти.
 
-2. routes/users.js: add PUT /:id, placed after the POST handler and matching the existing style:
-// PUT /users/:id — replace a user's name and email; both are required
-router.put("/:id", (req, res) => {
-  const { name, email } = req.body;
+4. **Автоматичний хук (hook)**
+   У конфігураційному файлі `.claude/settings.json` було реалізовано хук типу `PostToolUse`, який реагує на успішне завершення роботи інструменту `write_file`. Щоразу, коли Клод модифікує або створює будь-який файл у проєкті, хук автоматично перехоплює подію та виконує команду `npm run lint`. Це гарантує, що автоматизовані зміни коду миттєво форматуються відповідно до правил лінтера проєкту.
 
-  if (!name || !email) {
-    return res.status(400).json({ error: "name and email are required" });
-  }
-
-  const user = store.updateUser(Number(req.params.id), { name, email });
-
-  if (!user) {
-    return res.status(404).json({ error: "User not found" });
-  }
-
-  res.json(user);
-});
-- Order of checks: validation runs first, then the lookup. A malformed request returns 400 whether or not the id exists. The tests pass either way.
-- Status codes: 200 on success, 400 for missing name or email, 404 for an unknown user.
-- Request body parsing: I haven't read server.js yet. POST already reads req.body, so express.json() is presumably set up. I'll confirm this when I implement.
-
-3. Verify
-- Run npm test, which runs node --test. The three new tests should pass, and users.test.js and notes.test.js should still pass.
-- Run npm run lint to match the CI workflow.
-
-Коміти розділила на два логічні кроки: спочатку шар даних у store.js, потім рівень маршрутизації в users.js, щоб підтримувати атомарність змін
-
-Підтверджено коректність обробки відсутності полів та неіснуючих ID
+5. **Безголовий режим (Headless mode) та обмеження інструментів**
+   В автономному headless-режимі за допомогою прапорця `claude -p` було запущено задачу створення інтеграційних тестів для нового ендпоінту з використанням `supertest`. Для безпечного виконання без нагляду розробника область видимості Клода було суворо обмежено через аргумент `--allowedTools` лише інструментами `write_file`, `view_file` та `list_directory`, що повністю заблокувало йому можливість несанкціонованого виконання довільних bash-команд у системі.

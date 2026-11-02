@@ -9,6 +9,7 @@ app.use(express.json());
 
 app.use("/users", usersRoutes);
 app.use("/health", healthRoutes);
+app.use("/api", healthRoutes);
 
 const PORT = process.env.PORT || 3000;
 
