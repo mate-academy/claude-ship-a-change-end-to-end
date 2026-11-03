@@ -4,6 +4,6 @@
 
 **Model.** Claude Sonnet 5.5: the change is small and follows an existing pattern, so a fast, capable model was enough.
 
-**Commits.** Three commits: the store helper, the route, and this file. Each is one logical change and can be understood on its own.
+**Commits.** Four commits: the store helper, the route, this file, and a follow-up fix after review. Each is one logical change and can be understood on its own.
 
-**Review.** See the review step before opening the PR: validation order (400 before 404), whitespace-only values, and a missing request body were checked.
+**Review.** I ran `/code-review` before opening the PR. It caught two real issues, which I fixed: `Number(req.params.id)` accepts values like `1.0` and `0x1`, so `PUT /users/0x1` updated user 1 (the route now rejects non-integer ids with 400), and an earlier version of this file claimed checks that had not been run yet. It also confirmed a deliberate choice: validation runs before the existence check, so `PUT /users/9999` with an invalid body returns 400, not 404. Left as is: `POST /users` validates less strictly than `PUT` (a follow-up, since it changes `POST`), no email format/uniqueness check (outside the task), and malformed JSON returns Express's HTML error (app-wide, not specific to this route).
