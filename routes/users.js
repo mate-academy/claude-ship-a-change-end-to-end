@@ -45,8 +45,10 @@ router.put("/:id", (req, res) => {
       .json({ error: "name and email are required and must be non-empty strings" });
   }
 
-  const id = Number(req.params.id);
-  const user = store.updateUser(id, { name: name.trim(), email: email.trim() });
+  // Only plain digits count as an id, so "1.0", "0x1" and "1e0" can't alias user 1.
+  const user = /^\d+$/.test(req.params.id)
+    ? store.updateUser(Number(req.params.id), { name: name.trim(), email: email.trim() })
+    : undefined;
 
   if (!user) {
     return res.status(404).json({ error: "User not found" });
