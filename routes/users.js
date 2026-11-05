@@ -39,15 +39,12 @@ router.put("/:id", (req, res) => {
   const id = Number(req.params.id);
   const { name, email } = req.body || {};
 
-  if (
-    typeof name !== "string" ||
-    typeof email !== "string" ||
-    !name.trim() ||
-    !email.trim()
-  ) {
-    return res
-      .status(400)
-      .json({ error: "name and email are required non-empty strings" });
+  if (typeof name !== "string" || !name.trim()) {
+    return res.status(400).json({ error: "name is required" });
+  }
+
+  if (typeof email !== "string" || !email.trim()) {
+    return res.status(400).json({ error: "email is required" });
   }
 
   if (!EMAIL_PATTERN.test(email.trim())) {
