@@ -36,7 +36,7 @@ router.post("/", (req, res) => {
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 // PUT /users/:id — update a user; name and email must be non-empty strings
-// and email must look like an email address
+// and email must look like an email address that no other user has
 router.put("/:id", (req, res) => {
   const id = Number(req.params.id);
   const { name, email } = req.body || {};
@@ -50,13 +50,18 @@ router.put("/:id", (req, res) => {
     return res.status(400).json({ error: "email must be a valid email address" });
   }
 
-  const user = store.updateUser(id, { name, email });
-
-  if (!user) {
+  if (!store.getUserById(id)) {
     return res.status(404).json({ error: "User not found" });
   }
 
-  res.json(user);
+  // Another user already has this email. The user keeping their own email
+  // (or changing only its case) is fine.
+  const existing = store.getUserByEmail(email);
+  if (existing && existing.id !== id) {
+    return res.status(409).json({ error: "email is already in use" });
+  }
+
+  res.json(store.updateUser(id, { name, email }));
 });
 
 module.exports = router;

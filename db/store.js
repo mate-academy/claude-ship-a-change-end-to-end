@@ -17,6 +17,12 @@ function getUserById(id) {
   return users.find((user) => user.id === id);
 }
 
+// Emails are compared case-insensitively, ignoring surrounding whitespace.
+function getUserByEmail(email) {
+  const wanted = email.trim().toLowerCase();
+  return users.find((user) => user.email.trim().toLowerCase() === wanted);
+}
+
 function createUser({ name, email }) {
   const user = { id: nextId, name, email };
   nextId += 1;
@@ -34,4 +40,10 @@ function updateUser(id, { name, email }) {
   return user;
 }
 
-module.exports = { getAllUsers, getUserById, createUser, updateUser };
+module.exports = {
+  getAllUsers,
+  getUserById,
+  getUserByEmail,
+  createUser,
+  updateUser,
+};
