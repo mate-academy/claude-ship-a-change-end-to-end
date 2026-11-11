@@ -32,7 +32,11 @@ router.post("/", (req, res) => {
   res.status(201).json(user);
 });
 
+// Something@something.tld with no spaces — a sanity check, not full RFC 5322.
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 // PUT /users/:id — update a user; name and email must be non-empty strings
+// and email must look like an email address
 router.put("/:id", (req, res) => {
   const id = Number(req.params.id);
   const { name, email } = req.body || {};
@@ -40,6 +44,10 @@ router.put("/:id", (req, res) => {
   const isValid = (value) => typeof value === "string" && value.trim() !== "";
   if (!isValid(name) || !isValid(email)) {
     return res.status(400).json({ error: "name and email are required" });
+  }
+
+  if (!EMAIL_PATTERN.test(email)) {
+    return res.status(400).json({ error: "email must be a valid email address" });
   }
 
   const user = store.updateUser(id, { name, email });

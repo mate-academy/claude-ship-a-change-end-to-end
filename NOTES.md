@@ -10,10 +10,11 @@ I accepted OpusPlan's first proposed plan without editing it. It had three parts
 I selected OpusPlan as the model. I chose opusplan to maximize plan thoroughness and execution economy. Opus 5.5 handled planning, and Sonnet 5.5 handled the implementation, commits and review.
 
 ## Commits
-Three commits on `feature/update-user`, one logical change each:
+Four commits on `feature/update-user`, one logical change each:
 1. `Add updateUser helper to the in-memory store`: the data layer, which builds on nothing else.
 2. `Add PUT /users/:id endpoint with validation and 404`: the route, which depends on the helper.
 3. `Add NOTES.md describing plan, model, commits, and review`: documentation, kept apart from the code.
+4. `Validate email format on PUT /users/:id`: added after the review showed `not-an-email` was accepted. It is a separate commit because it is a follow-up to the review, not part of the original plan.
 
 I left the unrelated `package-lock.json` change out of all three commits.
 
@@ -22,5 +23,7 @@ Self-review of the diff found no bugs. These cases were already handled:
 - A non-numeric id becomes `NaN`, matches no user, and returns 404.
 - An empty body parses to `{}` and returns 400.
 - Validation runs before the lookup, so a bad body returns 400 even for an unknown id.
+
+The review did turn up one gap: any string was accepted as an email. I fixed it by adding a format check on `PUT` (`something@something.tld`, no spaces), which returns 400 with `email must be a valid email address`. `POST /users` does not have this check yet.
 
 One thing I left as it is: valid values are stored as sent, without trimming, which matches how `POST /users` behaves.
