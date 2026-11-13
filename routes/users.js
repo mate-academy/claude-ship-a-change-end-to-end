@@ -32,4 +32,48 @@ router.post("/", (req, res) => {
   res.status(201).json(user);
 });
 
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// Check the body for PUT /users/:id. Returns an error message, or null if valid.
+function validateUserUpdate(body) {
+  const { name, email } = body || {};
+
+  for (const [field, value] of Object.entries({ name, email })) {
+    if (value === undefined || value === null) {
+      return `${field} is required`;
+    }
+    if (typeof value !== "string" || value.trim() === "") {
+      return `${field} must be a non-empty string`;
+    }
+  }
+
+  if (!EMAIL_PATTERN.test(email.trim())) {
+    return "email must be a valid email address";
+  }
+
+  return null;
+}
+
+// PUT /users/:id — replace a user's name and email.
+// 404 if the user doesn't exist, 400 if a field is missing or invalid.
+router.put("/:id", (req, res) => {
+  const id = Number(req.params.id);
+
+  if (!store.getUserById(id)) {
+    return res.status(404).json({ error: "User not found" });
+  }
+
+  const error = validateUserUpdate(req.body);
+  if (error) {
+    return res.status(400).json({ error });
+  }
+
+  const user = store.updateUser(id, {
+    name: req.body.name.trim(),
+    email: req.body.email.trim(),
+  });
+
+  res.json(user);
+});
+
 module.exports = router;
