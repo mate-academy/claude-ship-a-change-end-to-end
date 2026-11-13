@@ -24,4 +24,18 @@ function createUser({ name, email }) {
   return user;
 }
 
-module.exports = { getAllUsers, getUserById, createUser };
+// Replace a user's name and email. Returns the updated user, or null when no
+// user has that id, so callers can answer "not found" instead of crashing.
+function updateUser(id, { name, email }) {
+  const user = getUserById(id);
+
+  if (!user) {
+    return null;
+  }
+
+  user.name = name;
+  user.email = email;
+  return user;
+}
+
+module.exports = { getAllUsers, getUserById, createUser, updateUser };
