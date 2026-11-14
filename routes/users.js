@@ -46,7 +46,9 @@ router.put("/:id", (req, res) => {
       .json({ error: "name and email are required and must be non-empty strings" });
   }
 
-  if (!email.includes("@")) {
+  // Minimal format check: something@something.tld, no spaces, one "@"
+  const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!EMAIL_PATTERN.test(email.trim())) {
     return res.status(400).json({ error: "email must be a valid email address" });
   }
 
