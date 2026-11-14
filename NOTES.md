@@ -4,7 +4,7 @@
 
 The plan touched two files: add `updateUser(id, { name, email })` to `db/store.js` (returns the updated user, or `undefined` for an unknown id), then add `PUT /users/:id` to `routes/users.js`, calling the store rather than the `users` array, matching the existing routes. It covered the three cases in `tests/update-user.test.js` (200 / 404 / 400) and the repo's error convention of JSON `{ "error": "..." }`.
 
-Before approving I tightened it in two ways: "invalid" had to mean more than "missing" (wrong type, blank name, email not shaped like an address), and the id in the URL must win — an `id` in the body is ignored. I also asked for extra tests of my own in a separate file, since the provided test file must not be edited.
+I didn't need to edit it before approving: it already treated "invalid" as more than "missing" (wrong type, blank name, email not shaped like an address), made the URL id win over any `id` in the body, and put extra tests in a separate file, since the provided test file must not be edited. The thing I checked hardest was that it went through `db/store.js` and covered the not-found path.
 
 ## Model
 
