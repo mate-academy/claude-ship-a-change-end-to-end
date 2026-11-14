@@ -14,4 +14,6 @@ I used Claude Opus. The feature is small, but the point of the project was caref
 One logical change per commit, ordered so each builds on the last and the history reads as data layer → endpoint → docs.
 
 ## Review
-The review confirmed: unknown ids return 404 without crashing; missing, empty, whitespace-only, and non-string fields return 400; a non-JSON body returns 400; lint passes. Things it flagged that I decided were acceptable for now: the in-memory store mutates the user object in place (fine here since there's no real DB), email validation is only a basic `@` check, and validation runs before the existence check, so an invalid body on an unknown id returns 400 rather than 404. PUT is treated as a full replace (both fields required); partial updates would be a PATCH.
+The review confirmed: unknown ids return 404 without crashing; missing, empty, whitespace-only, and non-string fields return 400; a non-JSON body returns 400; lint passes. Things it flagged that I decided were acceptable for now: the in-memory store mutates the user object in place (fine here since there's no real DB), and validation runs before the existence check, so an invalid body on an unknown id returns 400 rather than 404. PUT is treated as a full replace (both fields required); partial updates would be a PATCH.
+
+After opening the PR, the course reviewer pointed out that the `@`-only email check let values like `@` and `name@` through. I replaced it with a minimal format check (`local@domain.tld`, no spaces, a single `@`), so those now return 400.
