@@ -3,6 +3,21 @@ const store = require("../db/store");
 
 const router = express.Router();
 
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// Returns an error message for invalid input, or null when it is valid.
+function validateUserInput({ name, email }) {
+  if (typeof name !== "string" || name.trim() === "") {
+    return "name is required and must be a non-empty string";
+  }
+
+  if (typeof email !== "string" || !EMAIL_PATTERN.test(email.trim())) {
+    return "email is required and must be a valid email address";
+  }
+
+  return null;
+}
+
 // GET /users — list every user
 router.get("/", (req, res) => {
   res.json(store.getAllUsers());
@@ -30,6 +45,30 @@ router.post("/", (req, res) => {
 
   const user = store.createUser({ name, email });
   res.status(201).json(user);
+});
+
+// PUT /users/:id — replace a user's name and email; 404 if the user doesn't
+// exist, 400 for invalid input
+router.put("/:id", (req, res) => {
+  const id = Number(req.params.id);
+
+  if (!store.getUserById(id)) {
+    return res.status(404).json({ error: "User not found" });
+  }
+
+  const input = req.body ?? {};
+  const error = validateUserInput(input);
+
+  if (error) {
+    return res.status(400).json({ error });
+  }
+
+  const user = store.updateUser(id, {
+    name: input.name.trim(),
+    email: input.email.trim(),
+  });
+
+  res.json(user);
 });
 
 module.exports = router;
