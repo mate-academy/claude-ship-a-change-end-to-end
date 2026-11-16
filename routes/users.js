@@ -32,4 +32,33 @@ router.post("/", (req, res) => {
   res.status(201).json(user);
 });
 
+// PUT /users/:id — replace a user's name and email; both are required
+// non-empty strings. 404 if the user doesn't exist.
+router.put("/:id", (req, res) => {
+  const id = Number(req.params.id);
+  const { name, email } = req.body || {};
+
+  const isNonEmptyString = (value) =>
+    typeof value === "string" && value.trim() !== "";
+
+  if (!isNonEmptyString(name) || !isNonEmptyString(email)) {
+    return res
+      .status(400)
+      .json({ error: "name and email are required and must be non-empty strings" });
+  }
+
+  // Basic shape check only (something@something.tld), not full RFC validation.
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+    return res.status(400).json({ error: "email must be a valid email address" });
+  }
+
+  const user = store.updateUser(id, { name: name.trim(), email: email.trim() });
+
+  if (!user) {
+    return res.status(404).json({ error: "User not found" });
+  }
+
+  res.json(user);
+});
+
 module.exports = router;
