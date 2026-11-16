@@ -47,6 +47,11 @@ router.put("/:id", (req, res) => {
       .json({ error: "name and email are required and must be non-empty strings" });
   }
 
+  // Basic shape check only (something@something.tld), not full RFC validation.
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+    return res.status(400).json({ error: "email must be a valid email address" });
+  }
+
   const user = store.updateUser(id, { name: name.trim(), email: email.trim() });
 
   if (!user) {
