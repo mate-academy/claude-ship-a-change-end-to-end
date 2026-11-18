@@ -1,5 +1,6 @@
 const express = require("express");
 const store = require("../db/store");
+const { validateUserInput, parseId } = require("../validators/user");
 
 const router = express.Router();
 
@@ -10,7 +11,11 @@ router.get("/", (req, res) => {
 
 // GET /users/:id — fetch a single user, or 404 if it doesn't exist
 router.get("/:id", (req, res) => {
-  const id = Number(req.params.id);
+  const id = parseId(req.params.id);
+  if (id === null) {
+    return res.status(400).json({ error: "id must be a positive integer" });
+  }
+
   const user = store.getUserById(id);
 
   if (!user) {
@@ -20,16 +25,42 @@ router.get("/:id", (req, res) => {
   res.json(user);
 });
 
-// POST /users — create a user; name and email are required
+// POST /users — create a user; name and email are required and validated
+// the same way as in PUT /users/:id
 router.post("/", (req, res) => {
-  const { name, email } = req.body;
-
-  if (!name || !email) {
-    return res.status(400).json({ error: "name and email are required" });
+  const error = validateUserInput(req.body);
+  if (error) {
+    return res.status(400).json({ error });
   }
 
-  const user = store.createUser({ name, email });
+  const user = store.createUser({
+    name: req.body.name.trim(),
+    email: req.body.email.trim(),
+  });
   res.status(201).json(user);
+});
+
+// PUT /users/:id — replace a user's name and email; both are required
+router.put("/:id", (req, res) => {
+  const id = parseId(req.params.id);
+  if (id === null) {
+    return res.status(400).json({ error: "id must be a positive integer" });
+  }
+
+  const error = validateUserInput(req.body);
+  if (error) {
+    return res.status(400).json({ error });
+  }
+
+  const user = store.updateUser(id, {
+    name: req.body.name.trim(),
+    email: req.body.email.trim(),
+  });
+  if (!user) {
+    return res.status(404).json({ error: "User not found" });
+  }
+
+  res.json(user);
 });
 
 module.exports = router;
