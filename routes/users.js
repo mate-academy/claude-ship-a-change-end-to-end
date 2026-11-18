@@ -32,4 +32,34 @@ router.post("/", (req, res) => {
   res.status(201).json(user);
 });
 
+// Checks a name/email pair. Returns an error message, or null if both are valid.
+function validateUser({ name, email }) {
+  if (typeof name !== "string" || typeof email !== "string" || !name.trim() || !email.trim()) {
+    return "name and email are required";
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+    return "email must be a valid email address";
+  }
+  return null;
+}
+
+// PUT /users/:id — replace a user's name and email; 400 if invalid, 404 if missing
+router.put("/:id", (req, res) => {
+  const { name, email } = req.body || {};
+  const error = validateUser({ name, email });
+
+  if (error) {
+    return res.status(400).json({ error });
+  }
+
+  const id = Number(req.params.id);
+  const user = store.updateUser(id, { name: name.trim(), email: email.trim() });
+
+  if (!user) {
+    return res.status(404).json({ error: "User not found" });
+  }
+
+  res.json(user);
+});
+
 module.exports = router;
