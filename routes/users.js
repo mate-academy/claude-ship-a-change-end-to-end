@@ -58,6 +58,12 @@ router.put("/:id", (req, res) => {
       .json({ error: "name and email must be non-empty strings" });
   }
 
+  // Deliberately loose (something@something, no spaces): catches obvious
+  // typos without trying to fully validate addresses
+  if (!/^[^\s@]+@[^\s@]+$/.test(email.trim())) {
+    return res.status(400).json({ error: "email must be a valid email address" });
+  }
+
   res.json(store.updateUser(id, { name: name.trim(), email: email.trim() }));
 });
 
