@@ -32,4 +32,39 @@ router.post("/", (req, res) => {
   res.status(201).json(user);
 });
 
+// PUT /users/:id — replace a user's name and email; both are required
+router.put("/:id", (req, res) => {
+  const id = Number(req.params.id);
+
+  if (!store.getUserById(id)) {
+    return res.status(404).json({ error: "User not found" });
+  }
+
+  // Fall back to {} so a request with no JSON body gets a 400, not a crash
+  const { name, email } = req.body || {};
+
+  if (name === undefined || email === undefined) {
+    return res.status(400).json({ error: "name and email are required" });
+  }
+
+  if (
+    typeof name !== "string" ||
+    typeof email !== "string" ||
+    !name.trim() ||
+    !email.trim()
+  ) {
+    return res
+      .status(400)
+      .json({ error: "name and email must be non-empty strings" });
+  }
+
+  // Deliberately loose (something@something, no spaces): catches obvious
+  // typos without trying to fully validate addresses
+  if (!/^[^\s@]+@[^\s@]+$/.test(email.trim())) {
+    return res.status(400).json({ error: "email must be a valid email address" });
+  }
+
+  res.json(store.updateUser(id, { name: name.trim(), email: email.trim() }));
+});
+
 module.exports = router;
