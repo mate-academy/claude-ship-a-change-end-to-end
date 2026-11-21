@@ -3,6 +3,12 @@ const store = require("../db/store");
 
 const router = express.Router();
 
+function isNonEmptyString(value) {
+  return typeof value === "string" && value.trim() !== "";
+}
+
+const VALIDATION_ERROR = "name and email are required and must be non-empty strings";
+
 // GET /users — list every user
 router.get("/", (req, res) => {
   res.json(store.getAllUsers());
@@ -30,6 +36,30 @@ router.post("/", (req, res) => {
 
   const user = store.createUser({ name, email });
   res.status(201).json(user);
+});
+
+// PUT /users/:id — replace name and email; name and email are required, 404 if the user doesn't exist
+router.put("/:id", (req, res) => {
+  if (!req.body) {
+    return res.status(400).json({ error: VALIDATION_ERROR });
+  }
+
+  const { name, email } = req.body;
+
+  if (!isNonEmptyString(name) || !isNonEmptyString(email)) {
+    return res.status(400).json({ error: VALIDATION_ERROR });
+  }
+
+  const user = store.updateUser(Number(req.params.id), {
+    name: name.trim(),
+    email: email.trim(),
+  });
+
+  if (!user) {
+    return res.status(404).json({ error: "User not found" });
+  }
+
+  res.json(user);
 });
 
 module.exports = router;
