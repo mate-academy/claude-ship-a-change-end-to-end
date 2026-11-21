@@ -32,4 +32,25 @@ router.post("/", (req, res) => {
   res.status(201).json(user);
 });
 
+// PUT /users/:id — update a user; name and email are both required
+router.put("/:id", (req, res) => {
+  const { name, email } = req.body || {};
+
+  if (typeof name !== "string" || !name.trim()) {
+    return res.status(400).json({ error: "name is required and must be a non-empty string" });
+  }
+  if (typeof email !== "string" || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return res.status(400).json({ error: "email is required and must be a valid email address" });
+  }
+
+  const id = Number(req.params.id);
+  const user = store.updateUser(id, { name: name.trim(), email: email.trim() });
+
+  if (!user) {
+    return res.status(404).json({ error: "User not found" });
+  }
+
+  res.json(user);
+});
+
 module.exports = router;
