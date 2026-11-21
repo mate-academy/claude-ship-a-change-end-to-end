@@ -9,6 +9,9 @@ let users = [
 
 let nextId = 3;
 
+// Returned by updateUser when no user has the given id.
+const USER_NOT_FOUND = "user not found";
+
 function getAllUsers() {
   return users;
 }
@@ -24,4 +27,20 @@ function createUser({ name, email }) {
   return user;
 }
 
-module.exports = { getAllUsers, getUserById, createUser };
+function updateUser(id, { name, email }) {
+  const user = getUserById(id);
+  if (!user) {
+    return USER_NOT_FOUND;
+  }
+  user.name = name;
+  user.email = email;
+  return user;
+}
+
+module.exports = {
+  getAllUsers,
+  getUserById,
+  createUser,
+  updateUser,
+  USER_NOT_FOUND,
+};
