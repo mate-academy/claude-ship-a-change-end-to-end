@@ -38,7 +38,7 @@ router.post("/", (req, res) => {
 // PUT /users/:id — replace name and email of an existing user.
 // Both fields are required; 400 if one is missing or invalid, 404 if the user doesn't exist.
 router.put("/:id", (req, res) => {
-  const { name, email } = req.body;
+  const { name, email } = req.body || {};
 
   const cleanName = typeof name === "string" ? name.trim() : "";
   const cleanEmail = typeof email === "string" ? email.trim() : "";
