@@ -3,6 +3,22 @@ const store = require("../db/store");
 
 const router = express.Router();
 
+// Simple shape check: something@something.tld, no spaces.
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// Returns an error message if `name` or `email` is missing or invalid, otherwise null.
+function validateUserFields({ name, email } = {}) {
+  const isFilled = (value) => typeof value === "string" && value.trim() !== "";
+
+  if (!isFilled(name) || !isFilled(email)) {
+    return "name and email are required";
+  }
+  if (!EMAIL_PATTERN.test(email.trim())) {
+    return "email is not valid";
+  }
+  return null;
+}
+
 // GET /users — list every user
 router.get("/", (req, res) => {
   res.json(store.getAllUsers());
@@ -30,6 +46,25 @@ router.post("/", (req, res) => {
 
   const user = store.createUser({ name, email });
   res.status(201).json(user);
+});
+
+// PUT /users/:id — replace a user's name and email; 400 if invalid, 404 if not found
+router.put("/:id", (req, res) => {
+  const id = Number(req.params.id);
+
+  const problem = validateUserFields(req.body);
+  if (problem) {
+    return res.status(400).json({ error: problem });
+  }
+
+  const { name, email } = req.body;
+  const user = store.updateUser(id, { name: name.trim(), email: email.trim() });
+
+  if (!user) {
+    return res.status(404).json({ error: "User not found" });
+  }
+
+  res.json(user);
 });
 
 module.exports = router;
