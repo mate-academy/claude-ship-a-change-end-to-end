@@ -3,6 +3,10 @@ const store = require("../db/store");
 
 const router = express.Router();
 
+function isNonEmptyString(value) {
+  return typeof value === "string" && value.trim().length > 0;
+}
+
 // GET /users — list every user
 router.get("/", (req, res) => {
   res.json(store.getAllUsers());
@@ -24,7 +28,7 @@ router.get("/:id", (req, res) => {
 router.post("/", (req, res) => {
   const { name, email } = req.body;
 
-  if (!name || !email) {
+  if (!isNonEmptyString(name) || !isNonEmptyString(email)) {
     return res.status(400).json({ error: "name and email are required" });
   }
 
@@ -36,7 +40,7 @@ router.post("/", (req, res) => {
 router.put("/:id", (req, res) => {
   const { name, email } = req.body;
 
-  if (!name || !email) {
+  if (!isNonEmptyString(name) || !isNonEmptyString(email)) {
     return res.status(400).json({ error: "name and email are required" });
   }
 
