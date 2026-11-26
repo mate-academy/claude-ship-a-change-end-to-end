@@ -5,10 +5,10 @@ The approved plan was to add `PUT /users/:id`: add a `store.updateUser(id, { nam
 helper mirroring `getUserById`/`createUser`, then a `PUT /:id` route handler
 in `routes/users.js` mirroring the existing `GET /:id` not-found handling and
 `POST /` validation — 400 for a missing `name`/`email`, 404 for an unknown
-id, 200 with the updated user otherwise. I approved it as written, without
-editing it — the tests in `tests/update-user.test.js` fully specified the
-contract, and the existing GET/POST handlers gave an unambiguous pattern to
-follow, so there was nothing to negotiate.
+id, 200 with the updated user otherwise. **I approved the plan without editing it.** The tests in
+`tests/update-user.test.js` fully specified the contract, and the existing
+GET/POST handlers gave an unambiguous pattern to follow, so there was
+nothing to negotiate.
 
 ## Model choice
 Claude Sonnet 5. The task is small and pattern-following (copy the shape of
