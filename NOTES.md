@@ -35,8 +35,9 @@ anything. Confirmed validation runs *before* the id lookup, so a request
 with both a missing field and an unknown id returns 400, not 404 — consistent
 with how `POST` is written. Also confirmed `express.json()` is mounted
 globally in `server.js`, so `req.body` is populated before the handler runs.
-No bugs found; nothing needed changing as a result of the review — the gaps
-that exist (no type/format validation on `name`/`email`, e.g. falsy-but-odd
-values like `0` being rejected while non-string values are accepted) are
-pre-existing looseness inherited from `POST /users`, not regressions
-introduced by this change.
+The review did catch one real gap: `!name || !email` only rejects falsy
+values, so wrong-type input (a number, an object, an array) is truthy and
+sails through, then gets stored as-is. Fixed by adding a shared
+`isNonEmptyString` check and applying it to both `POST /` and `PUT /:id`
+(the latter inherited the same check from `POST`, so both got fixed
+together rather than leaving them inconsistent).
