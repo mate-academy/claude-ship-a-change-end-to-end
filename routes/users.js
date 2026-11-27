@@ -43,7 +43,7 @@ router.put("/:id", (req, res) => {
       .json({ error: "name and email are required and must be non-empty strings" });
   }
 
-  if (!email.includes("@")) {
+  if (!EMAIL_PATTERN.test(email.trim())) {
     return res.status(400).json({ error: "email must be a valid email address" });
   }
 
@@ -55,6 +55,9 @@ router.put("/:id", (req, res) => {
 
   res.json(user);
 });
+
+// One "@", something before it, and a dotted domain after it, no spaces.
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function isNonEmptyString(value) {
   return typeof value === "string" && value.trim() !== "";
