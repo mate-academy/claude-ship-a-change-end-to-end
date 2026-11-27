@@ -7,6 +7,12 @@ function isNonEmptyString(value) {
   return typeof value === "string" && value.trim() !== "";
 }
 
+// Only plain positive integers ("1", "42") are valid ids; "abc", "0x1", "1.0"
+// and "1e0" are rejected instead of being coerced by Number().
+function isValidId(value) {
+  return /^[1-9]\d*$/.test(value);
+}
+
 // GET /users — list every user
 router.get("/", (req, res) => {
   res.json(store.getAllUsers());
@@ -46,8 +52,12 @@ router.put("/:id", (req, res) => {
       .json({ error: "name and email are required and must be non-empty strings" });
   }
 
+  if (!isValidId(req.params.id)) {
+    return res.status(400).json({ error: "id must be a positive integer" });
+  }
+
   const id = Number(req.params.id);
-  const user = store.updateUser(id, { name, email });
+  const user = store.updateUser(id, { name: name.trim(), email: email.trim() });
 
   if (!user) {
     return res.status(404).json({ error: "User not found" });
