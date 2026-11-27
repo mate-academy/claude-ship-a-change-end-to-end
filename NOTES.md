@@ -1,9 +1,14 @@
 # NOTES — update-a-user endpoint
 
-**Plan.** Add `PUT /users/:id`. The route (`routes/users.js`) validates the id (positive integer) and the body (`name` a non-empty string, `email` a well-formed address, both trimmed). It returns 400 with a clear message on bad input, and 404 `{ error: "User not found" }` when the id is unknown. The write goes through a new `updateUser(id, { name, email })` helper in `db/store.js`, which returns `null` for an unknown id instead of throwing. The plan followed the existing GET/POST pattern and touched only the route and the store.
+**Plan.** I did not write a separate plan document or run plan mode before coding. The plan was the endpoint described in the project brief: `PUT /users/:id` with validation, a 404 for unknown ids, and data access through `db/store.js`. I implemented that plan directly in the session and did not edit it before approval, because there was no separate approval step. The implementation: the route (`routes/users.js`) validates the id as a positive integer and the body, with `name` a non-empty string and `email` a well-formed address, both trimmed. It returns 400 with a message naming the problem, 404 `{ error: "User not found" }` for an unknown id, and 200 with the updated user otherwise. The write goes through a new `updateUser(id, { name, email })` helper in `db/store.js`, which returns `null` for an unknown id so the route can respond 404 instead of throwing. The route follows the existing GET and POST style.
 
-**Model.** Claude Haiku 5.5, chosen because the change is small, well specified by the tests, and cheap to iterate on.
+**Model.** Claude Haiku 5.5. The change is small and the tests define the behaviour exactly, so a fast model was enough, and I could iterate cheaply on the validation rules.
 
-**Commit split.** Nothing is committed yet. The intended split is two commits: (1) the store helper, (2) the route with validation. Each commit should be runnable on its own.
+**Commit split.** Three commits, in this order:
+1. `Add updateUser helper to the users store` changes only `db/store.js`.
+2. `Add PUT /users/:id with validation and not-found handling` changes only `routes/users.js`.
+3. `Add NOTES.md for the update-user change` adds this file.
 
-**Review.** Self-review against the not-found and invalid-input cases. Checked: unknown id returns 404 without touching data; non-numeric, zero and fractional ids return 400; blank or non-string fields return 400; whitespace is trimmed before storing. Syntax was checked on both changed files. `npm test` passes locally after a fresh `npm install`.
+I split the work this way so each commit has one concern. The store helper comes first because the route depends on it, so the route commit builds on a working helper. The notes come last because they describe the finished change. Each commit touches a single file, so a reviewer can read them in any order. The store commit on its own passes a syntax check, and the route tests only go green from the route commit onward.
+
+**Review.** I reviewed the diff myself against the test cases and the edge cases I listed. It confirmed the behaviour I wanted: an unknown id returns 404 without changing any data; non-numeric, zero and fractional ids return 400; blank or non-string fields return 400; and whitespace is trimmed before saving. Nothing in the review needed changing. `npm test` passes locally after a fresh `npm install`.
