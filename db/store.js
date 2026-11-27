@@ -24,4 +24,17 @@ function createUser({ name, email }) {
   return user;
 }
 
-module.exports = { getAllUsers, getUserById, createUser };
+// Updates an existing user's name and email. Returns the updated user, or
+// null if no user has that id — the route turns null into a 404.
+function updateUser(id, { name, email }) {
+  const user = users.find((u) => u.id === id);
+  if (!user) {
+    return null;
+  }
+
+  user.name = name;
+  user.email = email;
+  return user;
+}
+
+module.exports = { getAllUsers, getUserById, createUser, updateUser };
