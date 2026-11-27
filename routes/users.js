@@ -56,8 +56,9 @@ router.put("/:id", (req, res) => {
   res.json(user);
 });
 
-// One "@", something before it, and a dotted domain after it, no spaces.
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+// One "@" with something before it, then a domain of non-empty labels
+// separated by single dots (no leading, trailing or doubled dots), no spaces.
+const EMAIL_PATTERN = /^[^\s@]+@(?:[^\s@.]+\.)+[^\s@.]+$/;
 
 function isNonEmptyString(value) {
   return typeof value === "string" && value.trim() !== "";

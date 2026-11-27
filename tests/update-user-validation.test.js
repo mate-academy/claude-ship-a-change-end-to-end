@@ -4,12 +4,15 @@ const request = require("supertest");
 
 const app = require("../server");
 
-for (const email of ["@", "a@", "@b.com", "a@b", "a b@c.com", "a@@b.com"]) {
+for (const email of ["@", "a@", "@b.com", "a@b", "a b@c.com", "a@@b.com", "user@.example.com", "user@example..com", "user@example.com."]) {
   test(`PUT /users/:id rejects the malformed email "${email}" with 400`, async () => {
     const res = await request(app).put("/users/1").send({ name: "Ada", email });
 
     assert.strictEqual(res.status, 400);
     assert.strictEqual(typeof res.body.error, "string");
+
+    const after = await request(app).get("/users/1");
+    assert.notStrictEqual(after.body.email, email.trim());
   });
 }
 
