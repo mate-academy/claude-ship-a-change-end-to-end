@@ -38,7 +38,9 @@ router.put("/:id", (req, res) => {
   const { name, email } = req.body;
 
   if (!isNonEmptyString(name) || !isNonEmptyString(email)) {
-    return res.status(400).json({ error: "name and email are required" });
+    return res
+      .status(400)
+      .json({ error: "name and email are required and must be non-empty strings" });
   }
 
   if (!email.includes("@")) {
